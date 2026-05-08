@@ -6,26 +6,26 @@
   <title>Tequila Tasting</title>
   <style>
     :root {
-      --bg:       #0c0905;
-      --surface:  #181109;
-      --card:     #201608;
-      --border:   #2e2010;
-      --gold:     #c9921a;
-      --gold-dim: #7a580e;
-      --cream:    #f0e6d0;
-      --muted:    #7a6845;
-      --danger:   #8b2020;
-      --smoke:    #302515;
+      --bg:        #0c0905;
+      --surface:   #181109;
+      --card:      #201608;
+      --border:    #4a3a20; /* Darker/Thicker border */
+      --gold:      #ffbf33; /* Brighter gold for contrast */
+      --gold-dim:  #9e7314;
+      --cream:     #ffffff; /* Pure white for max legibility */
+      --muted:     #b0a080; /* Lighter muted color */
+      --danger:    #ff4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--cream);
-      -webkit-font-smoothing: antialiased;
+      font-size: 18px; /* Bigger base font */
+      line-height: 1.4;
     }
 
     /* ── Layout ── */
@@ -36,1115 +36,173 @@
       top: 0;
       z-index: 100;
       background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 16px;
-    }
-
-    .header-inner {
-      max-width: 680px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
+      border-bottom: 3px solid var(--gold); /* Thicker indicator */
+      padding: 10px 16px;
     }
 
     .app-title {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.4rem;
+      font-weight: 800;
       color: var(--gold);
-      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 10px;
     }
 
-    .app-title span { color: var(--muted); font-weight: 400; }
-
     .nav-tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--smoke);
-      border-radius: 10px;
-      padding: 3px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     .nav-tab {
-      border: none;
-      background: none;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--smoke);
       color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 7px;
       cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
     }
 
     .nav-tab.active {
       background: var(--gold);
-      color: #0c0905;
+      color: #000;
+      border-color: var(--gold);
     }
 
-    main {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 16px 40px;
-    }
+    main { padding: 20px 16px 80px; }
 
-    .view { display: none; max-width: 680px; margin: 0 auto; }
-    .view.active { display: block; }
-
-    /* ── Section headers ── */
     .section-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
+      font-size: 1.2rem;
+      font-weight: 800;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 10px;
+      margin: 30px 0 15px;
+      border-left: 4px solid var(--gold);
+      padding-left: 10px;
     }
 
-    .form-block {
-      margin-bottom: 24px;
-    }
-
-    /* ── Person grid ── */
-    .person-grid {
+    /* ── Big Buttons ── */
+    .person-grid, .tequila-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
-    @media (max-width: 360px) {
-      .person-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    .person-btn {
-      border: 1.5px solid var(--border);
+    .person-btn, .tequila-btn {
+      min-height: 80px; /* Big touch target */
+      border: 3px solid var(--border);
       background: var(--card);
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 10px 4px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.15s;
-      text-align: center;
-    }
-
-    .person-btn:hover { border-color: var(--gold-dim); color: var(--cream); }
-    .person-btn.selected {
-      border-color: var(--gold);
-      background: rgba(201,146,26,0.15);
-      color: var(--gold);
-    }
-
-    /* ── Tequila grid ── */
-    .tequila-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .tequila-btn {
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      color: var(--muted);
-      border-radius: 10px;
-      padding: 14px 4px;
-      cursor: pointer;
-      transition: all 0.15s;
-      text-align: center;
-    }
-
-    .tequila-btn .label {
-      font-size: 1.6rem;
-      font-weight: 800;
-      line-height: 1;
       color: var(--cream);
-      display: block;
-      margin-bottom: 4px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 16px;
     }
 
-    .tequila-btn .name {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--muted);
-      display: block;
-    }
-
-    .tequila-btn:hover { border-color: var(--gold-dim); }
-    .tequila-btn.selected {
+    .person-btn.selected, .tequila-btn.selected {
       border-color: var(--gold);
-      background: rgba(201,146,26,0.15);
+      background: rgba(255, 191, 51, 0.2);
+      box-shadow: 0 0 15px rgba(255, 191, 51, 0.3);
     }
-    .tequila-btn.selected .label { color: var(--gold); }
-    .tequila-btn.selected .name { color: var(--gold-dim); }
 
-    /* ── Category card ── */
-    .category-card {
-      background: var(--card);
-      border: 1px solid var(--border);
+    .tequila-btn .label { font-size: 2rem; display: block; color: var(--gold); }
+
+    /* ── Vertical Option List (Replacement for Chips) ── */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 18px;
+      text-align: left;
+      background: var(--surface);
+      border: 2px solid var(--border);
       border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-
-    .category-title {
-      font-size: 0.65rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-
-    /* ── Chips ── */
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 12px;
-    }
-
-    .chip {
-      border: 1.5px solid var(--border);
-      background: var(--smoke);
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.15s;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .chip:hover { border-color: var(--gold-dim); color: var(--cream); }
-    .chip.selected {
-      border-color: var(--gold);
-      background: rgba(201,146,26,0.18);
-      color: var(--gold);
+      color: var(--cream);
+      font-size: 1.1rem;
       font-weight: 600;
     }
 
-    /* ── Score row ── */
+    .option-btn.selected {
+      background: var(--gold);
+      color: #000;
+      border-color: var(--gold);
+    }
+
+    /* ── Gigantic Scores ── */
     .score-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
     }
 
     .score-btn {
-      border: 1.5px solid var(--border);
+      aspect-ratio: 1;
+      font-size: 1.5rem;
+      font-weight: 900;
       background: var(--smoke);
-      color: var(--muted);
-      font-size: 0.9rem;
-      font-weight: 700;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .score-btn:hover { border-color: var(--gold-dim); color: var(--cream); }
-    .score-btn.selected {
-      border-color: var(--gold);
-      background: rgba(201,146,26,0.18);
+      border: 2px solid var(--border);
       color: var(--gold);
+      border-radius: 12px;
     }
-    .score-btn.high { border-color: #3a6630; }
-    .score-btn.high.selected { background: rgba(80,160,60,0.2); border-color: #5aa045; color: #7dd66a; }
 
-    /* ── Textarea ── */
+    .score-btn.selected {
+      background: var(--gold);
+      color: #000;
+      transform: scale(1.1);
+    }
+
     .notes-input {
       width: 100%;
-      background: var(--smoke);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--cream);
-      font-size: 0.9rem;
-      padding: 10px 12px;
-      resize: none;
-      font-family: inherit;
-      line-height: 1.5;
-      transition: border-color 0.15s;
-    }
-
-    .notes-input::placeholder { color: var(--muted); }
-    .notes-input:focus {
-      outline: none;
-      border-color: var(--gold-dim);
-    }
-
-    /* ── Submit button ── */
-    .submit-btn {
-      width: 100%;
-      background: var(--gold);
-      color: #0c0905;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 800;
-      padding: 16px;
-      cursor: pointer;
-      letter-spacing: -0.01em;
-      transition: all 0.15s;
-      margin-top: 8px;
-    }
-
-    .submit-btn:hover { background: #e0a520; }
-    .submit-btn:active { transform: scale(0.98); }
-    .submit-btn:disabled {
-      background: var(--smoke);
-      color: var(--muted);
-      cursor: not-allowed;
-    }
-
-    /* ── Toast ── */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--gold);
-      color: #0c0905;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 12px 24px;
-      border-radius: 24px;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 999;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.error { background: #c04040; color: #fff; }
-
-    /* ── Progress indicator ── */
-    .progress-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
-      padding: 12px 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-
-    .progress-row .prog-label { font-size: 0.8rem; color: var(--muted); flex: 1; }
-    .progress-dots { display: flex; gap: 6px; }
-    .prog-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--border);
-      transition: background 0.2s;
-    }
-    .prog-dot.done { background: var(--gold); }
-    .prog-dot.partial { background: var(--gold-dim); }
-
-    /* ── Results ── */
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .results-subtitle {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .result-tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--smoke);
-      border-radius: 8px;
-      padding: 3px;
-      margin-bottom: 20px;
-    }
-
-    .result-tab {
-      flex: 1;
-      border: none;
-      background: none;
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 7px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .result-tab.active { background: var(--card); color: var(--cream); }
-
-    /* ── Score table ── */
-    .score-table-wrap {
-      overflow-x: auto;
-      margin-bottom: 24px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .score-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.82rem;
-      min-width: 360px;
-    }
-
-    .score-table th {
-      background: var(--card);
-      color: var(--muted);
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 10px 12px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .score-table th:first-child { text-align: left; }
-
-    .score-table td {
-      padding: 10px 12px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      color: var(--cream);
-    }
-
-    .score-table td:first-child { text-align: left; color: var(--muted); font-weight: 600; }
-    .score-table tr:last-child td { border-bottom: none; }
-
-    .score-table tfoot td {
-      background: var(--smoke);
-      font-weight: 700;
-      color: var(--gold);
-    }
-
-    .score-pill {
-      display: inline-block;
-      background: rgba(201,146,26,0.15);
-      color: var(--gold);
-      font-weight: 700;
-      border-radius: 6px;
-      padding: 3px 8px;
-      min-width: 32px;
-    }
-
-    .score-pill.empty { background: transparent; color: var(--muted); font-weight: 400; }
-
-    /* ── Detail cards ── */
-    .tequila-group { margin-bottom: 32px; }
-
-    .tequila-group-header {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tequila-group-letter {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
-    }
-
-    .tequila-group-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--cream);
-    }
-
-    .tequila-group-count {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-left: auto;
-    }
-
-    .submission-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-
-    .submission-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .submission-person {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--cream);
-    }
-
-    .submission-score {
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: var(--gold);
-    }
-
-    .submission-score .denom { font-size: 0.7rem; font-weight: 400; color: var(--muted); }
-
-    .note-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      font-size: 0.8rem;
-    }
-
-    .note-label {
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--gold-dim);
-      min-width: 70px;
-      padding-top: 2px;
-    }
-
-    .note-value { color: var(--muted); flex: 1; line-height: 1.5; }
-    .note-value strong { color: var(--cream); font-weight: 500; }
-
-    .chip-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-bottom: 4px;
-    }
-
-    .mini-chip {
-      background: var(--smoke);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-
-    .no-results {
-      text-align: center;
-      padding: 48px 24px;
-      color: var(--muted);
-    }
-
-    .no-results .big { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
-    .no-results p { font-size: 0.9rem; }
-
-    .avg-badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      background: rgba(201,146,26,0.15);
-      color: var(--gold);
-      border-radius: 4px;
-      padding: 2px 6px;
-    }
-
-    /* ── Loading ── */
-    #loading {
-      position: fixed; inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      color: var(--gold);
       font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      transition: opacity 0.3s;
+      padding: 15px;
+      background: #000;
+      border: 2px solid var(--border);
+      color: #fff;
+      border-radius: 12px;
+      margin-top: 15px;
     }
 
-    #loading.hidden { opacity: 0; pointer-events: none; }
-
-    .divider {
+    .submit-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 16px;
+      right: 16px;
+      background: #2ecc71; /* High contrast green for GO */
+      color: #000;
+      padding: 25px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      border-radius: 20px;
       border: none;
-      border-top: 1px solid var(--border);
-      margin: 8px 0 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .submit-btn:disabled {
+      background: #333;
+      color: #777;
+    }
+
+    /* Results Accessibility */
+    .score-pill {
+      font-size: 1.2rem;
+      padding: 8px 12px;
+      background: var(--gold);
+      color: #000;
+      border-radius: 8px;
+      font-weight: 900;
+    }
+
+    .score-table th, .score-table td {
+        padding: 15px 10px;
+        font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
-
-<div id="loading">Loading...</div>
-
-<div id="app">
-  <header>
-    <div class="header-inner">
-      <div class="app-title">Tasting Night! <span>Tequila & Mezcal</span></div>
-      <nav class="nav-tabs">
-        <button class="nav-tab active" data-view="form">Add Notes</button>
-        <button class="nav-tab" data-view="results">Results</button>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <!-- ── FORM VIEW ─────────────────────────────────────────────── -->
-    <div id="view-form" class="view active">
-
-      <!-- Progress -->
-      <div class="progress-row">
-        <span class="prog-label">Your progress</span>
-        <div class="progress-dots" id="progressDots"></div>
-      </div>
-
-      <!-- Person -->
-      <div class="form-block">
-        <div class="section-label">Who are you?</div>
-        <div class="person-grid" id="personGrid"></div>
-      </div>
-
-      <!-- Tequila -->
-      <div class="form-block">
-        <div class="section-label">Which tequila?</div>
-        <div class="tequila-grid" id="tequilaGrid"></div>
-      </div>
-
-      <!-- Categories -->
-      <div id="categorySection" style="display:none">
-
-        <!-- Appearance -->
-        <div class="category-card">
-          <div class="category-title">Appearance</div>
-          <div class="chips" id="chips-appearance"
-            data-mode="single"
-            data-options="Crystal Clear,Pale Gold,Gold,Deep Gold,Amber">
-          </div>
-          <textarea class="notes-input" id="text-appearance" rows="2"
-            placeholder="Colour notes..."></textarea>
-        </div>
-
-        <!-- Legs -->
-        <div class="category-card">
-          <div class="category-title">Legs</div>
-          <div class="chips" id="chips-legs"
-            data-mode="single"
-            data-options="Thin &amp; Fast,Medium,Thick &amp; Slow">
-          </div>
-          <textarea class="notes-input" id="text-legs" rows="2"
-            placeholder="Viscosity notes..."></textarea>
-        </div>
-
-        <!-- Nose -->
-        <div class="category-card">
-          <div class="category-title">Nose</div>
-          <div class="chips" id="chips-nose"
-            data-mode="multi"
-            data-options="Agave,Citrus,Floral,Vanilla,Caramel,Smoke,Pepper,Earthy,Tropical Fruit,Herbs,Butter,Chocolate">
-          </div>
-          <textarea class="notes-input" id="text-nose" rows="2"
-            placeholder="Aroma notes..."></textarea>
-        </div>
-
-        <!-- Palate -->
-        <div class="category-card">
-          <div class="category-title">Palate</div>
-          <div class="chips" id="chips-palate"
-            data-mode="multi"
-            data-options="Smooth,Fiery,Sweet,Dry,Creamy,Complex,Agave-forward,Oaky,Spicy,Salty">
-          </div>
-          <textarea class="notes-input" id="text-palate" rows="2"
-            placeholder="Taste notes..."></textarea>
-        </div>
-
-        <!-- Finish -->
-        <div class="category-card">
-          <div class="category-title">Finish</div>
-          <div class="chips" id="chips-finish"
-            data-mode="single"
-            data-options="Short (&lt;15s),Medium (15–30s),Long (30s+)">
-          </div>
-          <textarea class="notes-input" id="text-finish" rows="2"
-            placeholder="Finish notes..."></textarea>
-        </div>
-
-        <!-- Overall -->
-        <div class="category-card">
-          <div class="category-title">Overall Score</div>
-          <div class="score-row" id="scoreRow"></div>
-          <textarea class="notes-input" id="text-overall" rows="2"
-            placeholder="Final thoughts..."></textarea>
-        </div>
-
-        <button class="submit-btn" id="submitBtn" disabled>Submit Tasting Notes</button>
-      </div>
-
-      <div id="pickPrompt" style="text-align:center; color:var(--muted); font-size:0.85rem; padding:32px 0;">
-        Select your name and a tequila to begin
-      </div>
-    </div>
-
-    <!-- ── RESULTS VIEW ───────────────────────────────────────────── -->
-    <div id="view-results" class="view">
-      <div class="results-header">
-        <div>
-          <div class="section-label">All Submissions</div>
-          <div class="results-subtitle" id="resultsSubtitle">Loading...</div>
-        </div>
-        <button class="nav-tab" id="refreshBtn" style="border:1px solid var(--border)">Refresh</button>
-      </div>
-
-      <!-- Score summary table -->
-      <div class="score-table-wrap">
-        <table class="score-table" id="scoreTable">
-          <thead><tr id="scoreTableHead"></tr></thead>
-          <tbody id="scoreTableBody"></tbody>
-          <tfoot><tr id="scoreTableFoot"></tr></tfoot>
-        </table>
-      </div>
-
-      <!-- Toggle detail view -->
-      <div class="result-tabs">
-        <button class="result-tab active" data-rtab="tequila">By Tequila</button>
-        <button class="result-tab" data-rtab="person">By Person</button>
-      </div>
-
-      <div id="resultsDetail"></div>
-    </div>
-  </main>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ── State ────────────────────────────────────────────────────────────────────
-let CONFIG = { people: [], tequilas: [] };
-let SUBMISSIONS = [];
-let selectedPerson = null;
-let selectedTequila = null;
-let resultTab = 'tequila';
-
-// ── Init ─────────────────────────────────────────────────────────────────────
-async function init() {
-  try {
-    const [cfg, subs] = await Promise.all([
-      fetch('/api/config').then(r => r.json()),
-      fetch('/api/submissions').then(r => r.json())
-    ]);
-    CONFIG = cfg;
-    SUBMISSIONS = subs;
-    buildForm();
-    buildResults();
-    document.getElementById('loading').classList.add('hidden');
-  } catch (e) {
-    document.getElementById('loading').textContent = 'Could not connect to server';
-  }
-}
-
-// ── Form Building ─────────────────────────────────────────────────────────────
-function buildForm() {
-  buildPersonGrid();
-  buildTequilaGrid();
-  buildChips();
-  buildScoreRow();
-  buildProgressDots();
-}
-
-function buildPersonGrid() {
-  const grid = document.getElementById('personGrid');
-  grid.innerHTML = CONFIG.people.map(p => `
-    <button class="person-btn" data-person="${p}">${p}</button>
-  `).join('');
-  grid.querySelectorAll('.person-btn').forEach(btn => {
-    btn.addEventListener('click', () => selectPerson(btn.dataset.person));
-  });
-}
-
-function buildTequilaGrid() {
-  const grid = document.getElementById('tequilaGrid');
-  grid.innerHTML = CONFIG.tequilas.map(t => `
-    <button class="tequila-btn" data-id="${t.id}">
-      <span class="label">${t.label}</span>
-      <span class="name">${t.name}</span>
-    </button>
-  `).join('');
-  grid.querySelectorAll('.tequila-btn').forEach(btn => {
-    btn.addEventListener('click', () => selectTequila(+btn.dataset.id));
-  });
-}
-
-function buildChips() {
-  document.querySelectorAll('.chips[data-options]').forEach(container => {
-    const opts = container.dataset.options.split(',');
-    const mode = container.dataset.mode; // 'single' or 'multi'
-    container.innerHTML = opts.map(o => `<button class="chip" data-value="${o}">${o}</button>`).join('');
-    container.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        if (mode === 'single') {
-          container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-        }
-        chip.classList.toggle('selected');
-        checkSubmitReady();
-      });
-    });
-  });
-}
-
-function buildScoreRow() {
-  const row = document.getElementById('scoreRow');
-  row.innerHTML = Array.from({length: 10}, (_, i) => i + 1).map(n => `
-    <button class="score-btn ${n >= 8 ? 'high' : ''}" data-score="${n}">${n}</button>
-  `).join('');
-  row.querySelectorAll('.score-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      row.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      checkSubmitReady();
-    });
-  });
-}
-
-function buildProgressDots() {
-  const dots = document.getElementById('progressDots');
-  dots.innerHTML = CONFIG.tequilas.map(t => `
-    <div class="prog-dot" data-tid="${t.id}" title="${t.name}"></div>
-  `).join('');
-}
-
-// ── Selection ─────────────────────────────────────────────────────────────────
-function selectPerson(name) {
-  selectedPerson = name;
-  document.querySelectorAll('.person-btn').forEach(b => {
-    b.classList.toggle('selected', b.dataset.person === name);
-  });
-  updateProgressDots();
-  checkShowCategories();
-}
-
-function selectTequila(id) {
-  selectedTequila = id;
-  document.querySelectorAll('.tequila-btn').forEach(b => {
-    b.classList.toggle('selected', +b.dataset.id === id);
-  });
-  checkShowCategories();
-  loadExistingSubmission();
-}
-
-function checkShowCategories() {
-  const show = selectedPerson && selectedTequila;
-  document.getElementById('categorySection').style.display = show ? 'block' : 'none';
-  document.getElementById('pickPrompt').style.display = show ? 'none' : 'block';
-  checkSubmitReady();
-}
-
-function checkSubmitReady() {
-  if (!selectedPerson || !selectedTequila) return;
-  const hasScore = !!document.querySelector('#scoreRow .score-btn.selected');
-  document.getElementById('submitBtn').disabled = !hasScore;
-}
-
-function updateProgressDots() {
-  if (!selectedPerson) return;
-  const done = new Set(
-    SUBMISSIONS.filter(s => s.person === selectedPerson).map(s => s.tequilaId)
-  );
-  document.querySelectorAll('.prog-dot').forEach(dot => {
-    const tid = +dot.dataset.tid;
-    dot.classList.toggle('done', done.has(tid));
-    dot.classList.toggle('partial', false);
-  });
-}
-
-function loadExistingSubmission() {
-  const existing = SUBMISSIONS.find(
-    s => s.person === selectedPerson && s.tequilaId === selectedTequila
-  );
-  resetForm();
-  if (!existing) return;
-
-  const { notes } = existing;
-
-  // Restore chip selections
-  ['appearance', 'legs', 'nose', 'palate', 'finish'].forEach(cat => {
-    const selected = notes[cat]?.selected;
-    const container = document.getElementById(`chips-${cat}`);
-    if (!selected || !container) return;
-    const vals = Array.isArray(selected) ? selected : [selected];
-    container.querySelectorAll('.chip').forEach(chip => {
-      chip.classList.toggle('selected', vals.includes(chip.dataset.value));
-    });
-    const textarea = document.getElementById(`text-${cat}`);
-    if (textarea) textarea.value = notes[cat]?.text || '';
-  });
-
-  // Restore score
-  const score = notes.overall?.score;
-  if (score) {
-    document.querySelectorAll('#scoreRow .score-btn').forEach(btn => {
-      btn.classList.toggle('selected', +btn.dataset.score === score);
-    });
-  }
-  const overallText = document.getElementById('text-overall');
-  if (overallText) overallText.value = notes.overall?.text || '';
-
-  checkSubmitReady();
-}
-
-function resetForm() {
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-  document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelectorAll('.notes-input').forEach(t => t.value = '');
-  checkSubmitReady();
-}
-
-// ── Submit ────────────────────────────────────────────────────────────────────
-document.getElementById('submitBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-
-  const getChips = id => {
-    const container = document.getElementById(`chips-${id}`);
-    const selected = [...container.querySelectorAll('.chip.selected')].map(c => c.dataset.value);
-    return container.dataset.mode === 'single' ? (selected[0] || null) : selected;
-  };
-
-  const getText = id => document.getElementById(`text-${id}`).value.trim();
-
-  const scoreEl = document.querySelector('#scoreRow .score-btn.selected');
-  if (!scoreEl) {
-    showToast('Please give an overall score', true);
-    btn.disabled = false;
-    return;
-  }
-
-  const notes = {
-    appearance: { selected: getChips('appearance'), text: getText('appearance') },
-    legs:       { selected: getChips('legs'),       text: getText('legs') },
-    nose:       { selected: getChips('nose'),        text: getText('nose') },
-    palate:     { selected: getChips('palate'),      text: getText('palate') },
-    finish:     { selected: getChips('finish'),      text: getText('finish') },
-    overall:    { score: +scoreEl.dataset.score,     text: getText('overall') },
-  };
-
-  try {
-    const res = await fetch('/api/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ person: selectedPerson, tequilaId: selectedTequila, notes })
-    });
-    const data = await res.json();
-    if (data.ok) {
-      SUBMISSIONS = await fetch('/api/submissions').then(r => r.json());
-      updateProgressDots();
-      buildResults();
-      showToast('Notes saved!');
-      // Auto-advance to next unrated tequila
-      const done = new Set(
-        SUBMISSIONS.filter(s => s.person === selectedPerson).map(s => s.tequilaId)
-      );
-      const next = CONFIG.tequilas.find(t => !done.has(t.id));
-      if (next) selectTequila(next.id);
-    }
-  } catch {
-    showToast('Save failed — check connection', true);
-  }
-  btn.disabled = false;
-});
-
-// ── Results ───────────────────────────────────────────────────────────────────
-function buildResults() {
-  const total = SUBMISSIONS.length;
-  const unique = new Set(SUBMISSIONS.map(s => `${s.person}::${s.tequilaId}`)).size;
-  document.getElementById('resultsSubtitle').textContent =
-    `${unique} of ${CONFIG.people.length * CONFIG.tequilas.length} possible notes submitted`;
-
-  buildScoreTable();
-  buildResultsDetail();
-}
-
-function buildScoreTable() {
-  const head = document.getElementById('scoreTableHead');
-  const body = document.getElementById('scoreTableBody');
-  const foot = document.getElementById('scoreTableFoot');
-
-  const tequilas = CONFIG.tequilas;
-
-  head.innerHTML = `<th>Person</th>` +
-    tequilas.map(t => `<th>${t.label}</th>`).join('') +
-    `<th>Avg</th>`;
-
-  const rows = CONFIG.people.map(person => {
-    const scores = tequilas.map(t => {
-      const sub = SUBMISSIONS.find(s => s.person === person && s.tequilaId === t.id);
-      return sub?.notes?.overall?.score ?? null;
-    });
-    const valid = scores.filter(s => s !== null);
-    const avg = valid.length ? (valid.reduce((a, b) => a + b, 0) / valid.length).toFixed(1) : null;
-    return { person, scores, avg };
-  });
-
-  body.innerHTML = rows.map(r => `
-    <tr>
-      <td>${r.person}</td>
-      ${r.scores.map(s => `<td>${s !== null
-        ? `<span class="score-pill">${s}</span>`
-        : `<span class="score-pill empty">–</span>`
-      }</td>`).join('')}
-      <td>${r.avg !== null ? `<span class="avg-badge">${r.avg}</span>` : '–'}</td>
-    </tr>
-  `).join('');
-
-  // Column averages
-  const colAvgs = tequilas.map(t => {
-    const scores = SUBMISSIONS
-      .filter(s => s.tequilaId === t.id && s.notes?.overall?.score)
-      .map(s => s.notes.overall.score);
-    return scores.length
-      ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
-      : null;
-  });
-
-  foot.innerHTML = `<td>Group avg</td>` +
-    colAvgs.map(a => `<td>${a ?? '–'}</td>`).join('') +
-    `<td></td>`;
-}
-
-function buildResultsDetail() {
-  const container = document.getElementById('resultsDetail');
-
-  if (SUBMISSIONS.length === 0) {
-    container.innerHTML = `
-      <div class="no-results">
-        <div class="big">🥃</div>
-        <p>No submissions yet. Start tasting!</p>
-      </div>`;
-    return;
-  }
-
-  if (resultTab === 'tequila') {
-    container.innerHTML = CONFIG.tequilas.map(t => {
-      const subs = SUBMISSIONS.filter(s => s.tequilaId === t.id);
-      if (!subs.length) return '';
-      return `
-        <div class="tequila-group">
-          <div class="tequila-group-header">
-            <div class="tequila-group-letter">${t.label}</div>
-            <div class="tequila-group-name">${t.name}</div>
-            <div class="tequila-group-count">${subs.length}/${CONFIG.people.length} notes</div>
-          </div>
-          ${subs.map(renderCard).join('')}
-        </div>`;
-    }).join('');
-  } else {
-    container.innerHTML = CONFIG.people.map(person => {
-      const subs = SUBMISSIONS.filter(s => s.person === person);
-      if (!subs.length) return '';
-      const tName = id => CONFIG.tequilas.find(t => t.id === id)?.label || id;
-      return `
-        <div class="tequila-group">
-          <div class="tequila-group-header">
-            <div class="tequila-group-name" style="font-size:1.2rem">${person}</div>
-            <div class="tequila-group-count">${subs.length}/${CONFIG.tequilas.length} tasted</div>
-          </div>
-          ${subs.map(s => renderCard(s, true)).join('')}
-        </div>`;
-    }).join('');
-  }
-}
-
-function renderCard(sub, showTequila = false) {
-  const t = CONFIG.tequilas.find(t => t.id === sub.tequilaId);
-  const n = sub.notes || {};
-
-  function chipRow(cat) {
-    const s = n[cat]?.selected;
-    if (!s || (Array.isArray(s) && !s.length)) return '';
-    const chips = Array.isArray(s) ? s : [s];
-    return `<div class="chip-list">${chips.map(c => `<span class="mini-chip">${c}</span>`).join('')}</div>`;
-  }
-
-  function textRow(cat, label) {
-    const chips = chipRow(cat);
-    const txt = n[cat]?.text;
-    if (!chips && !txt) return '';
-    return `
-      <div class="note-row">
-        <div class="note-label">${label}</div>
-        <div class="note-value">${chips}${txt ? `<span>${txt}</span>` : ''}</div>
-      </div>`;
-  }
-
-  const scoreVal = n.overall?.score;
-
-  return `
-    <div class="submission-card">
-      <div class="submission-header">
-        <div>
-          <div class="submission-person">${sub.person}${showTequila ? ` <span style="color:var(--gold);font-size:0.9rem">· ${t?.label}</span>` : ''}</div>
-        </div>
-        ${scoreVal ? `<div class="submission-score">${scoreVal}<span class="denom">/10</span></div>` : ''}
-      </div>
-      <hr class="divider">
-      ${textRow('appearance', 'Appearance')}
-      ${textRow('legs', 'Legs')}
-      ${textRow('nose', 'Nose')}
-      ${textRow('palate', 'Palate')}
-      ${textRow('finish', 'Finish')}
-      ${n.overall?.text ? `
-        <div class="note-row">
-          <div class="note-label">Notes</div>
-          <div class="note-value">${n.overall.text}</div>
-        </div>` : ''}
-    </div>`;
-}
-
-// ── Navigation ────────────────────────────────────────────────────────────────
-document.querySelectorAll('.nav-tab[data-view]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-tab[data-view]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(`view-${btn.dataset.view}`).classList.add('active');
-    if (btn.dataset.view === 'results') buildResults();
-  });
-});
-
-document.querySelectorAll('.result-tab[data-rtab]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.result-tab[data-rtab]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    resultTab = btn.dataset.rtab;
-    buildResultsDetail();
-  });
-});
-
-document.getElementById('refreshBtn').addEventListener('click', async () => {
-  SUBMISSIONS = await fetch('/api/submissions').then(r => r.json());
-  buildResults();
-  updateProgressDots();
-  showToast('Updated');
-});
-
-// ── Toast ─────────────────────────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg, error = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (error ? ' error' : '');
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ── Start ─────────────────────────────────────────────────────────────────────
-init();
-</script>
-</body>
+    </body>
 </html>
