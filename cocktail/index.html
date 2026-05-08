@@ -6,105 +6,257 @@
   <title>Tasting Night</title>
   <style>
     :root {
-      --bg:       #0c0905;
-      --surface:  #181109;
-      --card:     #201608;
-      --border:   #2e2010;
-      --gold:     #c9921a;
-      --gold-dim: #7a580e;
-      --cream:    #f0e6d0;
-      --muted:    #7a6845;
-      --smoke:    #302515;
+      --bg:       #0a0806;
+      --surface:  #151008;
+      --card:     #1e1509;
+      --border:   #332208;
+      --gold:     #e8a520;
+      --gold-dim: #8a600e;
+      --cream:    #f5ead0;
+      --muted:    #8a7050;
+      --smoke:    #2a1c08;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--cream); -webkit-font-smoothing: antialiased; }
     #app { display: flex; flex-direction: column; min-height: 100dvh; }
-    header { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; }
-    .header-inner { max-width: 680px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-    .app-title { font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: -0.02em; }
-    .app-title span { color: var(--muted); font-weight: 400; }
-    .nav-tabs { display: flex; gap: 4px; background: var(--smoke); border-radius: 10px; padding: 3px; }
-    .nav-tab { border: none; background: none; color: var(--muted); font-size: 0.85rem; font-weight: 600; padding: 6px 14px; border-radius: 7px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .nav-tab.active { background: var(--gold); color: #0c0905; }
-    main { flex: 1; overflow-y: auto; padding: 20px 16px 40px; }
-    .view { display: none; max-width: 680px; margin: 0 auto; }
+
+    /* ── Header ── */
+    header { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 2px solid var(--border); padding: 0 16px; }
+    .header-inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .app-title { font-size: 1.2rem; font-weight: 800; color: var(--gold); letter-spacing: -0.02em; }
+    .app-title span { color: var(--muted); font-weight: 400; font-size: 1rem; }
+    .nav-tabs { display: flex; gap: 4px; background: var(--smoke); border-radius: 12px; padding: 4px; }
+    .nav-tab { border: none; background: none; color: var(--muted); font-size: 0.9rem; font-weight: 700; padding: 8px 18px; border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .nav-tab.active { background: var(--gold); color: #0a0806; }
+
+    /* ── Main ── */
+    main { flex: 1; overflow-y: auto; padding: 20px 16px 60px; }
+    .view { display: none; max-width: 720px; margin: 0 auto; }
     .view.active { display: block; }
-    .section-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
-    .form-block { margin-bottom: 24px; }
-    .person-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .person-btn { border: 1.5px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 10px 4px; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: center; }
-    .person-btn:hover { border-color: var(--gold-dim); color: var(--cream); }
-    .person-btn.selected { border-color: var(--gold); background: rgba(201,146,26,0.15); color: var(--gold); }
-    .tequila-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .tequila-btn { border: 1.5px solid var(--border); background: var(--card); color: var(--muted); border-radius: 10px; padding: 14px 4px; cursor: pointer; transition: all 0.15s; text-align: center; }
-    .tequila-btn .label { font-size: 1.6rem; font-weight: 800; line-height: 1; color: var(--cream); display: block; margin-bottom: 4px; }
-    .tequila-btn .name { font-size: 0.7rem; font-weight: 600; color: var(--muted); display: block; }
-    .tequila-btn:hover { border-color: var(--gold-dim); }
-    .tequila-btn.selected { border-color: var(--gold); background: rgba(201,146,26,0.15); }
-    .tequila-btn.selected .label { color: var(--gold); }
-    .tequila-btn.selected .name { color: var(--gold-dim); }
-    .category-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
-    .category-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
-    .chip { border: 1.5px solid var(--border); background: var(--smoke); color: var(--muted); font-size: 0.8rem; font-weight: 500; padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
-    .chip:hover { border-color: var(--gold-dim); color: var(--cream); }
-    .chip.selected { border-color: var(--gold); background: rgba(201,146,26,0.18); color: var(--gold); font-weight: 600; }
-    .score-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-    .score-btn { border: 1.5px solid var(--border); background: var(--smoke); color: var(--muted); font-size: 0.9rem; font-weight: 700; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
-    .score-btn:hover { border-color: var(--gold-dim); color: var(--cream); }
-    .score-btn.selected { border-color: var(--gold); background: rgba(201,146,26,0.18); color: var(--gold); }
-    .score-btn.high { border-color: #3a6630; }
-    .score-btn.high.selected { background: rgba(80,160,60,0.2); border-color: #5aa045; color: #7dd66a; }
-    .notes-input { width: 100%; background: var(--smoke); border: 1px solid var(--border); border-radius: 8px; color: var(--cream); font-size: 0.9rem; padding: 10px 12px; resize: none; font-family: inherit; line-height: 1.5; transition: border-color 0.15s; }
+
+    /* ── Labels ── */
+    .section-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .form-block { margin-bottom: 28px; }
+
+    /* ── Person grid ── */
+    .person-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .person-btn {
+      border: 2px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 14px 4px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      min-height: 52px;
+    }
+    .person-btn.selected { border-color: var(--gold); background: rgba(232,165,32,0.18); color: var(--gold); }
+
+    /* ── Tequila grid ── */
+    .tequila-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .tequila-btn {
+      border: 2px solid var(--border);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .tequila-btn .lbl { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--cream); display: block; margin-bottom: 5px; }
+    .tequila-btn .nm  { font-size: 0.7rem; font-weight: 600; color: var(--muted); display: block; }
+    .tequila-btn.selected { border-color: var(--gold); background: rgba(232,165,32,0.18); }
+    .tequila-btn.selected .lbl { color: var(--gold); }
+
+    /* ── Category card ── */
+    .category-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .category-title {
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    /* ── Chips ── */
+    .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 14px; }
+    .chip {
+      border: 2px solid var(--border);
+      background: var(--smoke);
+      color: var(--cream);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      line-height: 1.2;
+    }
+    .chip.selected { border-color: var(--gold); background: rgba(232,165,32,0.2); color: var(--gold); }
+
+    /* ── Score buttons ── */
+    .score-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .score-btn {
+      border: 2px solid var(--border);
+      background: var(--smoke);
+      color: var(--cream);
+      font-size: 1.1rem;
+      font-weight: 800;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .score-btn.selected { border-color: var(--gold); background: rgba(232,165,32,0.2); color: var(--gold); }
+    .score-btn.high { border-color: #3a6630; color: #7dd66a; }
+    .score-btn.high.selected { background: rgba(80,160,60,0.25); border-color: #5aa045; color: #8ef07a; }
+
+    /* ── Textarea ── */
+    .notes-input {
+      width: 100%;
+      background: var(--smoke);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--cream);
+      font-size: 1rem;
+      padding: 12px 14px;
+      resize: none;
+      font-family: inherit;
+      line-height: 1.5;
+    }
     .notes-input::placeholder { color: var(--muted); }
     .notes-input:focus { outline: none; border-color: var(--gold-dim); }
-    .submit-btn { width: 100%; background: var(--gold); color: #0c0905; border: none; border-radius: 12px; font-size: 1rem; font-weight: 800; padding: 16px; cursor: pointer; letter-spacing: -0.01em; transition: all 0.15s; margin-top: 8px; }
-    .submit-btn:hover { background: #e0a520; }
+
+    /* ── Submit ── */
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #0a0806;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 18px;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      transition: all 0.15s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { background: #f5b830; }
     .submit-btn:active { transform: scale(0.98); }
     .submit-btn:disabled { background: var(--smoke); color: var(--muted); cursor: not-allowed; }
-    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--gold); color: #0c0905; font-weight: 700; font-size: 0.9rem; padding: 12px 24px; border-radius: 24px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 999; white-space: nowrap; pointer-events: none; }
+
+    /* ── Progress ── */
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      padding: 14px 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .prog-label { font-size: 0.85rem; color: var(--muted); flex: 1; font-weight: 600; }
+    .progress-dots { display: flex; gap: 8px; }
+    .prog-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+    .prog-dot.done { background: var(--gold); }
+
+    /* ── Pick prompt ── */
+    .pick-prompt {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 40px 0;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--gold);
+      color: #0a0806;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 14px 28px;
+      border-radius: 28px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+      white-space: nowrap;
+      pointer-events: none;
+    }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast.error { background: #c04040; color: #fff; }
-    .progress-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
-    .progress-row .prog-label { font-size: 0.8rem; color: var(--muted); flex: 1; }
-    .progress-dots { display: flex; gap: 6px; }
-    .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
-    .prog-dot.done { background: var(--gold); }
+
+    /* ── Results ── */
     .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .results-subtitle { font-size: 0.8rem; color: var(--muted); }
-    .result-tabs { display: flex; gap: 4px; background: var(--smoke); border-radius: 8px; padding: 3px; margin-bottom: 20px; }
-    .result-tab { flex: 1; border: none; background: none; color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 7px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
+    .results-subtitle { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+    .refresh-btn {
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--cream);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .result-tabs { display: flex; gap: 4px; background: var(--smoke); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+    .result-tab { flex: 1; border: none; background: none; color: var(--muted); font-size: 0.9rem; font-weight: 700; padding: 9px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
     .result-tab.active { background: var(--card); color: var(--cream); }
-    .score-table-wrap { overflow-x: auto; margin-bottom: 24px; border-radius: 12px; border: 1px solid var(--border); }
-    .score-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 360px; }
-    .score-table th { background: var(--card); color: var(--muted); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--border); }
+
+    /* ── Score table ── */
+    .score-table-wrap { overflow-x: auto; margin-bottom: 24px; border-radius: 14px; border: 1px solid var(--border); }
+    .score-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 360px; }
+    .score-table th { background: var(--card); color: var(--muted); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 14px; text-align: center; border-bottom: 1px solid var(--border); }
     .score-table th:first-child { text-align: left; }
-    .score-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--border); color: var(--cream); }
-    .score-table td:first-child { text-align: left; color: var(--muted); font-weight: 600; }
+    .score-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid var(--border); color: var(--cream); font-size: 0.9rem; }
+    .score-table td:first-child { text-align: left; color: var(--muted); font-weight: 700; }
     .score-table tr:last-child td { border-bottom: none; }
-    .score-table tfoot td { background: var(--smoke); font-weight: 700; color: var(--gold); }
-    .score-pill { display: inline-block; background: rgba(201,146,26,0.15); color: var(--gold); font-weight: 700; border-radius: 6px; padding: 3px 8px; min-width: 32px; }
+    .score-table tfoot td { background: var(--smoke); font-weight: 800; color: var(--gold); }
+    .score-pill { display: inline-block; background: rgba(232,165,32,0.18); color: var(--gold); font-weight: 800; border-radius: 8px; padding: 4px 10px; min-width: 34px; font-size: 0.9rem; }
     .score-pill.empty { background: transparent; color: var(--muted); font-weight: 400; }
-    .tequila-group { margin-bottom: 32px; }
-    .tequila-group-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    .tequila-group-letter { font-size: 1.8rem; font-weight: 900; color: var(--gold); line-height: 1; }
-    .tequila-group-name { font-size: 1rem; font-weight: 700; color: var(--cream); }
-    .tequila-group-count { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
-    .submission-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+    .avg-badge { font-size: 0.78rem; font-weight: 800; background: rgba(232,165,32,0.18); color: var(--gold); border-radius: 6px; padding: 3px 8px; }
+
+    /* ── Detail cards ── */
+    .tequila-group { margin-bottom: 36px; }
+    .tequila-group-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+    .tequila-group-letter { font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .tequila-group-name { font-size: 1.05rem; font-weight: 700; color: var(--cream); }
+    .tequila-group-count { font-size: 0.82rem; color: var(--muted); margin-left: auto; }
+    .submission-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
     .submission-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .submission-person { font-size: 0.85rem; font-weight: 700; color: var(--cream); }
-    .submission-score { font-size: 1.3rem; font-weight: 900; color: var(--gold); }
-    .submission-score .denom { font-size: 0.7rem; font-weight: 400; color: var(--muted); }
-    .note-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 0.8rem; }
-    .note-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-dim); min-width: 70px; padding-top: 2px; }
-    .note-value { color: var(--muted); flex: 1; line-height: 1.5; }
-    .chip-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
-    .mini-chip { background: var(--smoke); border: 1px solid var(--border); color: var(--muted); font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; }
-    .no-results { text-align: center; padding: 48px 24px; color: var(--muted); }
-    .no-results .big { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
-    .avg-badge { font-size: 0.7rem; font-weight: 700; background: rgba(201,146,26,0.15); color: var(--gold); border-radius: 4px; padding: 2px 6px; }
-    .divider { border: none; border-top: 1px solid var(--border); margin: 8px 0 12px; }
-    #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; color: var(--gold); font-size: 1.1rem; font-weight: 700; transition: opacity 0.3s; }
+    .submission-person { font-size: 1rem; font-weight: 800; color: var(--cream); }
+    .submission-score { font-size: 1.6rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .submission-score .denom { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+    .note-row { display: flex; gap: 10px; margin-bottom: 9px; font-size: 0.88rem; }
+    .note-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dim); min-width: 76px; padding-top: 2px; }
+    .note-value { color: var(--muted); flex: 1; line-height: 1.55; }
+    .chip-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
+    .mini-chip { background: var(--smoke); border: 1px solid var(--border); color: var(--cream); font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+    .no-results { text-align: center; padding: 60px 24px; color: var(--muted); }
+    .no-results .big { font-size: 3rem; margin-bottom: 14px; opacity: 0.3; }
+    .no-results p { font-size: 1rem; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 10px 0 14px; }
+
+    /* ── Loading ── */
+    #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; color: var(--gold); font-size: 1.2rem; font-weight: 800; transition: opacity 0.3s; }
     #loading.hidden { opacity: 0; pointer-events: none; }
   </style>
 </head>
@@ -124,6 +276,7 @@
   </header>
 
   <main>
+    <!-- FORM VIEW -->
     <div id="view-form" class="view active">
       <div class="progress-row">
         <span class="prog-label">Your progress</span>
@@ -134,7 +287,7 @@
         <div class="person-grid" id="personGrid"></div>
       </div>
       <div class="form-block">
-        <div class="section-label">Which tequila?</div>
+        <div class="section-label">Which spirit?</div>
         <div class="tequila-grid" id="tequilaGrid"></div>
       </div>
       <div id="categorySection" style="display:none">
@@ -159,8 +312,8 @@
           <textarea class="notes-input" id="text-palate" rows="2" placeholder="Taste notes..."></textarea>
         </div>
         <div class="category-card">
-          <div class="category-title">Finish</div>
-          <div class="chips" id="chips-finish" data-mode="single" data-options="Short (&lt;15s),Medium (15–30s),Long (30s+)"></div>
+          <div class="category-title">Finish (Aftertaste)</div>
+          <div class="chips" id="chips-finish" data-mode="single" data-options="Short (gone!),Smooth (No burn),Warm (like a hug),Lingering (30 seconds+)"></div>
           <textarea class="notes-input" id="text-finish" rows="2" placeholder="Finish notes..."></textarea>
         </div>
         <div class="category-card">
@@ -170,28 +323,27 @@
         </div>
         <button class="submit-btn" id="submitBtn" disabled>Submit Tasting Notes</button>
       </div>
-      <div id="pickPrompt" style="text-align:center;color:var(--muted);font-size:0.85rem;padding:32px 0">
-        Select your name and a tequila to begin
-      </div>
+      <div id="pickPrompt" class="pick-prompt">Select your name and a spirit to begin</div>
     </div>
 
+    <!-- RESULTS VIEW -->
     <div id="view-results" class="view">
       <div class="results-header">
         <div>
           <div class="section-label">All Submissions</div>
           <div class="results-subtitle" id="resultsSubtitle">Loading...</div>
         </div>
-        <button class="nav-tab" id="refreshBtn" style="border:1px solid var(--border)">Refresh</button>
+        <button class="refresh-btn" id="refreshBtn">Refresh</button>
       </div>
       <div class="score-table-wrap">
-        <table class="score-table" id="scoreTable">
+        <table class="score-table">
           <thead><tr id="scoreTableHead"></tr></thead>
           <tbody id="scoreTableBody"></tbody>
           <tfoot><tr id="scoreTableFoot"></tr></tfoot>
         </table>
       </div>
       <div class="result-tabs">
-        <button class="result-tab active" data-rtab="tequila">By Tequila</button>
+        <button class="result-tab active" data-rtab="tequila">By Spirit</button>
         <button class="result-tab" data-rtab="person">By Person</button>
       </div>
       <div id="resultsDetail"></div>
@@ -202,12 +354,12 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const PEOPLE = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Drew'];
+const PEOPLE = ['Aneil', 'Arif', 'Gagan', 'Manu', 'Sherdil', 'Sima', 'Wesley', 'Zamil'];
 const TEQUILAS = [
-  { id: 1, label: 'A', name: 'Tequila A' },
-  { id: 2, label: 'B', name: 'Tequila B' },
-  { id: 3, label: 'C', name: 'Tequila C' },
-  { id: 4, label: 'D', name: 'Tequila D' },
+  { id: 1, label: 'A', name: 'Spirit A' },
+  { id: 2, label: 'B', name: 'Spirit B' },
+  { id: 3, label: 'C', name: 'Spirit C' },
+  { id: 4, label: 'D', name: 'Spirit D' },
 ];
 
 const DB_URL = 'https://cocktail-49fc4-default-rtdb.firebaseio.com';
@@ -243,8 +395,9 @@ async function init() {
     buildResults();
     document.getElementById('loading').classList.add('hidden');
   } catch {
-    document.getElementById('loading').textContent = 'Could not load data — tap to retry';
-    document.getElementById('loading').onclick = init;
+    const el = document.getElementById('loading');
+    el.textContent = 'Could not connect — tap to retry';
+    el.onclick = init;
   }
 }
 
@@ -254,7 +407,7 @@ function buildForm() {
   pg.querySelectorAll('.person-btn').forEach(b => b.addEventListener('click', () => selectPerson(b.dataset.person)));
 
   const tg = document.getElementById('tequilaGrid');
-  tg.innerHTML = TEQUILAS.map(t => `<button class="tequila-btn" data-id="${t.id}"><span class="label">${t.label}</span><span class="name">${t.name}</span></button>`).join('');
+  tg.innerHTML = TEQUILAS.map(t => `<button class="tequila-btn" data-id="${t.id}"><span class="lbl">${t.label}</span><span class="nm">${t.name}</span></button>`).join('');
   tg.querySelectorAll('.tequila-btn').forEach(b => b.addEventListener('click', () => selectTequila(+b.dataset.id)));
 
   document.querySelectorAll('.chips[data-options]').forEach(c => {
@@ -405,7 +558,7 @@ function buildDetail() {
     c.innerHTML = PEOPLE.map(person => {
       const subs = SUBMISSIONS.filter(s=>s.person===person);
       if (!subs.length) return '';
-      return `<div class="tequila-group"><div class="tequila-group-header"><div class="tequila-group-name" style="font-size:1.2rem">${person}</div><div class="tequila-group-count">${subs.length}/${TEQUILAS.length}</div></div>${subs.map(s=>renderCard(s,true)).join('')}</div>`;
+      return `<div class="tequila-group"><div class="tequila-group-header"><div class="tequila-group-name" style="font-size:1.3rem">${person}</div><div class="tequila-group-count">${subs.length}/${TEQUILAS.length}</div></div>${subs.map(s=>renderCard(s,true)).join('')}</div>`;
     }).join('');
   }
 }
@@ -423,7 +576,7 @@ function renderCard(sub, showTequila=false) {
     if (!chips&&!txt) return '';
     return `<div class="note-row"><div class="note-label">${label}</div><div class="note-value">${chips}${txt?`<span>${txt}</span>`:''}</div></div>`;
   }
-  return `<div class="submission-card"><div class="submission-header"><div class="submission-person">${sub.person}${showTequila?` <span style="color:var(--gold)">· ${t?.label}</span>`:''}</div>${n.overall?.score?`<div class="submission-score">${n.overall.score}<span class="denom">/10</span></div>`:''}</div><hr class="divider">${noteRow('appearance','Appearance')}${noteRow('legs','Legs')}${noteRow('nose','Nose')}${noteRow('palate','Palate')}${noteRow('finish','Finish')}${n.overall?.text?`<div class="note-row"><div class="note-label">Notes</div><div class="note-value">${n.overall.text}</div></div>`:''}</div>`;
+  return `<div class="submission-card"><div class="submission-header"><div class="submission-person">${sub.person}${showTequila?` <span style="color:var(--gold);font-weight:600">· ${t?.label}</span>`:''}</div>${n.overall?.score?`<div class="submission-score">${n.overall.score}<span class="denom">/10</span></div>`:''}</div><hr class="divider">${noteRow('appearance','Appearance')}${noteRow('legs','Legs')}${noteRow('nose','Nose')}${noteRow('palate','Palate')}${noteRow('finish','Finish')}${n.overall?.text?`<div class="note-row"><div class="note-label">Notes</div><div class="note-value">${n.overall.text}</div></div>`:''}</div>`;
 }
 
 document.querySelectorAll('.nav-tab[data-view]').forEach(b => {
@@ -446,7 +599,7 @@ document.querySelectorAll('.result-tab[data-rtab]').forEach(b => {
 });
 
 document.getElementById('refreshBtn').addEventListener('click', async () => {
-  try { SUBMISSIONS = await loadSubmissions(); buildResults(); updateDots(); showToast('Updated'); }
+  try { SUBMISSIONS = await loadSubmissions(); buildResults(); updateDots(); showToast('Updated!'); }
   catch { showToast('Refresh failed', true); }
 });
 
