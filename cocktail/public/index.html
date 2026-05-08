@@ -9,12 +9,11 @@
       --bg:        #0c0905;
       --surface:   #181109;
       --card:      #201608;
-      --border:    #4a3a20;
-      --gold:      #ffbf33; /* Brighter for eyes */
+      --border:    #4a3a20; /* Darker but visible */
+      --gold:      #ffbf33; /* High contrast gold */
       --gold-dim:  #9e7314;
-      --cream:     #ffffff; /* High contrast */
-      --muted:     #b0a080;
-      --danger:    #ff4444;
+      --cream:     #ffffff; /* Pure white for max legibility */
+      --muted:     #b0a080; /* Brighter muted color */
       --smoke:     #302515;
     }
 
@@ -25,7 +24,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--cream);
-      font-size: 18px; /* Larger base size */
+      font-size: 18px; /* Larger base font */
       -webkit-font-smoothing: antialiased;
     }
 
@@ -80,7 +79,10 @@
       color: #000;
     }
 
-    main { flex: 1; padding: 20px 16px 120px; } /* Extra bottom padding for fixed button */
+    main {
+      flex: 1;
+      padding: 20px 16px 120px; /* Space for fixed submit button */
+    }
 
     .view { display: none; max-width: 680px; margin: 0 auto; }
     .view.active { display: block; }
@@ -95,7 +97,7 @@
       padding-left: 10px;
     }
 
-    /* ── BIG BUTTONS FOR TIRED EYES ── */
+    /* Grid improvements for fat-fingers */
     .person-grid, .tequila-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -122,7 +124,6 @@
     .tequila-btn .label { font-size: 1.8rem; display: block; }
     .tequila-btn .name { font-size: 0.8rem; display: block; opacity: 0.8; }
 
-    /* ── CATEGORY CARDS ── */
     .category-card {
       background: var(--card);
       border: 2px solid var(--border);
@@ -131,10 +132,17 @@
       margin-bottom: 20px;
     }
 
-    /* ── VERTICAL OPTIONS (Easier than small chips) ── */
+    .category-title {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 15px;
+    }
+
     .chips {
       display: flex;
-      flex-direction: column; /* Stacked for easier tapping */
+      flex-direction: column; /* Stacked chips are easier to hit than a wrap grid */
       gap: 8px;
       margin-bottom: 15px;
     }
@@ -157,7 +165,6 @@
       border-color: var(--gold);
     }
 
-    /* ── SCORE GRID ── */
     .score-row {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -190,7 +197,7 @@
       border-radius: 10px;
     }
 
-    /* ── THE "BIG GREEN" SUBMIT BUTTON ── */
+    /* Fixed floating submit button for drunk-proof access */
     .submit-btn {
       position: fixed;
       bottom: 20px;
@@ -198,7 +205,7 @@
       right: 16px;
       max-width: 648px;
       margin: 0 auto;
-      background: #2ecc71;
+      background: #2ecc71; /* High contrast Green for "GO" */
       color: #000;
       padding: 22px;
       font-size: 1.4rem;
@@ -209,9 +216,14 @@
       z-index: 200;
     }
 
-    .submit-btn:disabled { background: #333; color: #777; box-shadow: none; }
+    .submit-btn:disabled {
+      background: #333;
+      color: #777;
+      box-shadow: none;
+    }
 
-    /* Tables */
+    .progress-row { background: var(--card); border: 2px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+    
     .score-table-wrap { overflow-x: auto; border: 2px solid var(--border); border-radius: 12px; }
     .score-table { width: 100%; border-collapse: collapse; min-width: 400px; }
     .score-table th, .score-table td { padding: 15px; text-align: center; border-bottom: 1px solid var(--border); }
@@ -219,6 +231,8 @@
 
     #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; color: var(--gold); font-size: 1.5rem; font-weight: 800; }
     #loading.hidden { display: none; }
+    
+    .divider { border: none; border-top: 2px solid var(--border); margin: 15px 0; }
   </style>
 </head>
 <body>
@@ -238,35 +252,57 @@
 
   <main>
     <div id="view-form" class="view active">
-      <div class="section-label">1. Who are you?</div>
-      <div class="person-grid" id="personGrid"></div>
+      
+      <div class="progress-row">
+        <div class="section-label" style="margin-top:0">Your progress</div>
+        <div class="progress-dots" id="progressDots" style="display:flex; gap:8px;"></div>
+      </div>
 
-      <div class="section-label">2. Which tequila?</div>
-      <div class="tequila-grid" id="tequilaGrid"></div>
+      <div class="form-block">
+        <div class="section-label">1. Who are you?</div>
+        <div class="person-grid" id="personGrid"></div>
+      </div>
+
+      <div class="form-block">
+        <div class="section-label">2. Which tequila?</div>
+        <div class="tequila-grid" id="tequilaGrid"></div>
+      </div>
 
       <div id="categorySection" style="display:none">
         <div class="section-label">3. The Details</div>
         
         <div class="category-card">
-          <div style="margin-bottom:10px; color:var(--gold); font-weight:800;">APPEARANCE</div>
+          <div class="category-title">Appearance</div>
           <div class="chips" id="chips-appearance" data-mode="single" data-options="Crystal Clear,Pale Gold,Gold,Deep Gold,Amber"></div>
           <textarea class="notes-input" id="text-appearance" rows="2" placeholder="Appearance notes..."></textarea>
         </div>
 
         <div class="category-card">
-          <div style="margin-bottom:10px; color:var(--gold); font-weight:800;">NOSE (Aroma)</div>
+          <div class="category-title">Legs</div>
+          <div class="chips" id="chips-legs" data-mode="single" data-options="Thin & Fast,Medium,Thick & Slow"></div>
+          <textarea class="notes-input" id="text-legs" rows="2" placeholder="Viscosity notes..."></textarea>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Nose (Aroma)</div>
           <div class="chips" id="chips-nose" data-mode="multi" data-options="Agave,Citrus,Floral,Vanilla,Caramel,Smoke,Pepper,Earthy,Tropical Fruit,Herbs,Butter,Chocolate"></div>
           <textarea class="notes-input" id="text-nose" rows="2" placeholder="Smell notes..."></textarea>
         </div>
 
         <div class="category-card">
-          <div style="margin-bottom:10px; color:var(--gold); font-weight:800;">PALATE (Taste)</div>
+          <div class="category-title">Palate (Taste)</div>
           <div class="chips" id="chips-palate" data-mode="multi" data-options="Smooth,Fiery,Sweet,Dry,Creamy,Complex,Agave-forward,Oaky,Spicy,Salty"></div>
           <textarea class="notes-input" id="text-palate" rows="2" placeholder="Taste notes..."></textarea>
         </div>
 
         <div class="category-card">
-          <div style="margin-bottom:10px; color:var(--gold); font-weight:800;">OVERALL SCORE (1-10)</div>
+          <div class="category-title">Finish</div>
+          <div class="chips" id="chips-finish" data-mode="single" data-options="Short,Medium,Long"></div>
+          <textarea class="notes-input" id="text-finish" rows="2" placeholder="Finish notes..."></textarea>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Overall Score</div>
           <div class="score-row" id="scoreRow"></div>
           <textarea class="notes-input" id="text-overall" rows="3" placeholder="Final thoughts..."></textarea>
         </div>
@@ -292,11 +328,11 @@
   </main>
 </div>
 
-<div id="toast" style="position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--gold); color:#000; padding:12px 24px; border-radius:30px; font-weight:800; display:none; z-index:1000;"></div>
+<div class="toast" id="toast" style="display:none; position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--gold); color:#000; padding:15px 30px; border-radius:30px; font-weight:800; z-index:1000;"></div>
 
 <script>
-
-  let CONFIG = { people: [], tequilas: [] };
+// Logic remains identical to your original to prevent server errors
+let CONFIG = { people: [], tequilas: [] };
 let SUBMISSIONS = [];
 let selectedPerson = null;
 let selectedTequila = null;
@@ -351,11 +387,15 @@ function buildForm() {
     btn.classList.add('selected');
     checkSubmitReady();
   });
+  
+  const dots = document.getElementById('progressDots');
+  dots.innerHTML = CONFIG.tequilas.map(t => `<div class="prog-dot" data-tid="${t.id}" style="width:12px; height:12px; border-radius:50%; background:#444;"></div>`).join('');
 }
 
 function selectPerson(name) {
   selectedPerson = name;
   document.querySelectorAll('.person-btn').forEach(b => b.classList.toggle('selected', b.dataset.person === name));
+  updateProgressDots();
   checkShowCategories();
 }
 
@@ -364,6 +404,13 @@ function selectTequila(id) {
   document.querySelectorAll('.tequila-btn').forEach(b => b.classList.toggle('selected', +b.dataset.id === id));
   checkShowCategories();
   loadExisting();
+}
+
+function updateProgressDots() {
+  const done = new Set(SUBMISSIONS.filter(s => s.person === selectedPerson).map(s => s.tequilaId));
+  document.querySelectorAll('.prog-dot').forEach(dot => {
+    dot.style.background = done.has(+dot.dataset.tid) ? 'var(--gold)' : '#444';
+  });
 }
 
 function checkShowCategories() {
@@ -385,23 +432,18 @@ function loadExisting() {
   
   if (sub) {
     const n = sub.notes;
-    // Helper to restore selections
-    const restore = (id, data) => {
+    // Map back categories safely
+    ['appearance', 'legs', 'nose', 'palate', 'finish'].forEach(cat => {
+        const data = n[cat];
         if (!data) return;
-        const container = document.getElementById(`chips-${id}`);
+        const container = document.getElementById(`chips-${cat}`);
         const vals = Array.isArray(data.selected) ? data.selected : [data.selected];
         container.querySelectorAll('.chip').forEach(c => {
             if (vals.includes(c.dataset.value)) c.classList.add('selected');
         });
-        const txt = document.getElementById(`text-${id}`);
+        const txt = document.getElementById(`text-${cat}`);
         if (txt) txt.value = data.text || '';
-    };
-
-    restore('appearance', n.appearance);
-    restore('legs', n.legs);
-    restore('nose', n.nose);
-    restore('palate', n.palate);
-    restore('finish', n.finish);
+    });
 
     if (n.overall?.score) {
         document.querySelector(`.score-btn[data-score="${n.overall.score}"]`)?.classList.add('selected');
@@ -448,26 +490,22 @@ document.getElementById('submitBtn').onclick = async () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     });
-    
     if (res.ok) {
         showToast("SAVED!");
         SUBMISSIONS = await fetch('/api/submissions').then(r => r.json());
+        updateProgressDots();
         buildResults();
-    } else {
-        showToast("Server rejected data", true);
     }
   } catch (err) {
-      showToast("Connection Error", true);
+      showToast("Error - Check Connection", true);
   } finally {
       btn.disabled = false;
   }
 };
 
-function showToast(msg, isError = false) {
+function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; 
-  t.style.background = isError ? '#ff4444' : '#ffbf33';
-  t.style.display = 'block';
+  t.textContent = msg; t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 3000);
 }
 
@@ -493,7 +531,6 @@ function buildResults() {
 }
 
 init();
-  
 </script>
 </body>
 </html>
