@@ -1,0 +1,37 @@
+[
+  {
+    "person": "Alex",
+    "tequilaId": 2,
+    "notes": {
+      "appearance": {
+        "selected": "Deep Gold",
+        "text": ""
+      },
+      "legs": {
+        "selected": "Thin & Fast",
+        "text": ""
+      },
+      "nose": {
+        "selected": [
+          "Citrus"
+        ],
+        "text": ""
+      },
+      "palate": {
+        "selected": [
+          "Smooth"
+        ],
+        "text": ""
+      },
+      "finish": {
+        "selected": "Long (30s+)",
+        "text": ""
+      },
+      "overall": {
+        "score": 8,
+        "text": ""
+      }
+    },
+    "timestamp": "2026-05-08T15:51:46.912Z"
+  }
+]
