@@ -1,1 +1,466 @@
-placeholder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Tasting Night</title>
+  <style>
+    :root {
+      --bg:       #0c0905;
+      --surface:  #181109;
+      --card:     #201608;
+      --border:   #2e2010;
+      --gold:     #c9921a;
+      --gold-dim: #7a580e;
+      --cream:    #f0e6d0;
+      --muted:    #7a6845;
+      --smoke:    #302515;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--cream); -webkit-font-smoothing: antialiased; }
+    #app { display: flex; flex-direction: column; min-height: 100dvh; }
+    header { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; }
+    .header-inner { max-width: 680px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .app-title { font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: -0.02em; }
+    .app-title span { color: var(--muted); font-weight: 400; }
+    .nav-tabs { display: flex; gap: 4px; background: var(--smoke); border-radius: 10px; padding: 3px; }
+    .nav-tab { border: none; background: none; color: var(--muted); font-size: 0.85rem; font-weight: 600; padding: 6px 14px; border-radius: 7px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .nav-tab.active { background: var(--gold); color: #0c0905; }
+    main { flex: 1; overflow-y: auto; padding: 20px 16px 40px; }
+    .view { display: none; max-width: 680px; margin: 0 auto; }
+    .view.active { display: block; }
+    .section-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .form-block { margin-bottom: 24px; }
+    .person-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .person-btn { border: 1.5px solid var(--border); background: var(--card); color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 10px 4px; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: center; }
+    .person-btn:hover { border-color: var(--gold-dim); color: var(--cream); }
+    .person-btn.selected { border-color: var(--gold); background: rgba(201,146,26,0.15); color: var(--gold); }
+    .tequila-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .tequila-btn { border: 1.5px solid var(--border); background: var(--card); color: var(--muted); border-radius: 10px; padding: 14px 4px; cursor: pointer; transition: all 0.15s; text-align: center; }
+    .tequila-btn .label { font-size: 1.6rem; font-weight: 800; line-height: 1; color: var(--cream); display: block; margin-bottom: 4px; }
+    .tequila-btn .name { font-size: 0.7rem; font-weight: 600; color: var(--muted); display: block; }
+    .tequila-btn:hover { border-color: var(--gold-dim); }
+    .tequila-btn.selected { border-color: var(--gold); background: rgba(201,146,26,0.15); }
+    .tequila-btn.selected .label { color: var(--gold); }
+    .tequila-btn.selected .name { color: var(--gold-dim); }
+    .category-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .category-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .chip { border: 1.5px solid var(--border); background: var(--smoke); color: var(--muted); font-size: 0.8rem; font-weight: 500; padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .chip:hover { border-color: var(--gold-dim); color: var(--cream); }
+    .chip.selected { border-color: var(--gold); background: rgba(201,146,26,0.18); color: var(--gold); font-weight: 600; }
+    .score-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .score-btn { border: 1.5px solid var(--border); background: var(--smoke); color: var(--muted); font-size: 0.9rem; font-weight: 700; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+    .score-btn:hover { border-color: var(--gold-dim); color: var(--cream); }
+    .score-btn.selected { border-color: var(--gold); background: rgba(201,146,26,0.18); color: var(--gold); }
+    .score-btn.high { border-color: #3a6630; }
+    .score-btn.high.selected { background: rgba(80,160,60,0.2); border-color: #5aa045; color: #7dd66a; }
+    .notes-input { width: 100%; background: var(--smoke); border: 1px solid var(--border); border-radius: 8px; color: var(--cream); font-size: 0.9rem; padding: 10px 12px; resize: none; font-family: inherit; line-height: 1.5; transition: border-color 0.15s; }
+    .notes-input::placeholder { color: var(--muted); }
+    .notes-input:focus { outline: none; border-color: var(--gold-dim); }
+    .submit-btn { width: 100%; background: var(--gold); color: #0c0905; border: none; border-radius: 12px; font-size: 1rem; font-weight: 800; padding: 16px; cursor: pointer; letter-spacing: -0.01em; transition: all 0.15s; margin-top: 8px; }
+    .submit-btn:hover { background: #e0a520; }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { background: var(--smoke); color: var(--muted); cursor: not-allowed; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--gold); color: #0c0905; font-weight: 700; font-size: 0.9rem; padding: 12px 24px; border-radius: 24px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 999; white-space: nowrap; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { background: #c04040; color: #fff; }
+    .progress-row { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+    .progress-row .prog-label { font-size: 0.8rem; color: var(--muted); flex: 1; }
+    .progress-dots { display: flex; gap: 6px; }
+    .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+    .prog-dot.done { background: var(--gold); }
+    .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .results-subtitle { font-size: 0.8rem; color: var(--muted); }
+    .result-tabs { display: flex; gap: 4px; background: var(--smoke); border-radius: 8px; padding: 3px; margin-bottom: 20px; }
+    .result-tab { flex: 1; border: none; background: none; color: var(--muted); font-size: 0.8rem; font-weight: 600; padding: 7px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
+    .result-tab.active { background: var(--card); color: var(--cream); }
+    .score-table-wrap { overflow-x: auto; margin-bottom: 24px; border-radius: 12px; border: 1px solid var(--border); }
+    .score-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 360px; }
+    .score-table th { background: var(--card); color: var(--muted); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--border); }
+    .score-table th:first-child { text-align: left; }
+    .score-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--border); color: var(--cream); }
+    .score-table td:first-child { text-align: left; color: var(--muted); font-weight: 600; }
+    .score-table tr:last-child td { border-bottom: none; }
+    .score-table tfoot td { background: var(--smoke); font-weight: 700; color: var(--gold); }
+    .score-pill { display: inline-block; background: rgba(201,146,26,0.15); color: var(--gold); font-weight: 700; border-radius: 6px; padding: 3px 8px; min-width: 32px; }
+    .score-pill.empty { background: transparent; color: var(--muted); font-weight: 400; }
+    .tequila-group { margin-bottom: 32px; }
+    .tequila-group-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .tequila-group-letter { font-size: 1.8rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .tequila-group-name { font-size: 1rem; font-weight: 700; color: var(--cream); }
+    .tequila-group-count { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+    .submission-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+    .submission-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .submission-person { font-size: 0.85rem; font-weight: 700; color: var(--cream); }
+    .submission-score { font-size: 1.3rem; font-weight: 900; color: var(--gold); }
+    .submission-score .denom { font-size: 0.7rem; font-weight: 400; color: var(--muted); }
+    .note-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 0.8rem; }
+    .note-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-dim); min-width: 70px; padding-top: 2px; }
+    .note-value { color: var(--muted); flex: 1; line-height: 1.5; }
+    .chip-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+    .mini-chip { background: var(--smoke); border: 1px solid var(--border); color: var(--muted); font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; }
+    .no-results { text-align: center; padding: 48px 24px; color: var(--muted); }
+    .no-results .big { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
+    .avg-badge { font-size: 0.7rem; font-weight: 700; background: rgba(201,146,26,0.15); color: var(--gold); border-radius: 4px; padding: 2px 6px; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 8px 0 12px; }
+    #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; color: var(--gold); font-size: 1.1rem; font-weight: 700; transition: opacity 0.3s; }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+<div id="loading">Loading...</div>
+
+<div id="app">
+  <header>
+    <div class="header-inner">
+      <div class="app-title">Tasting Night <span>2025</span></div>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-view="form">Add Notes</button>
+        <button class="nav-tab" data-view="results">Results</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div id="view-form" class="view active">
+      <div class="progress-row">
+        <span class="prog-label">Your progress</span>
+        <div class="progress-dots" id="progressDots"></div>
+      </div>
+      <div class="form-block">
+        <div class="section-label">Who are you?</div>
+        <div class="person-grid" id="personGrid"></div>
+      </div>
+      <div class="form-block">
+        <div class="section-label">Which tequila?</div>
+        <div class="tequila-grid" id="tequilaGrid"></div>
+      </div>
+      <div id="categorySection" style="display:none">
+        <div class="category-card">
+          <div class="category-title">Appearance</div>
+          <div class="chips" id="chips-appearance" data-mode="single" data-options="Crystal Clear,Pale Gold,Gold,Deep Gold,Amber"></div>
+          <textarea class="notes-input" id="text-appearance" rows="2" placeholder="Colour notes..."></textarea>
+        </div>
+        <div class="category-card">
+          <div class="category-title">Legs</div>
+          <div class="chips" id="chips-legs" data-mode="single" data-options="Thin &amp; Fast,Medium,Thick &amp; Slow"></div>
+          <textarea class="notes-input" id="text-legs" rows="2" placeholder="Viscosity notes..."></textarea>
+        </div>
+        <div class="category-card">
+          <div class="category-title">Nose</div>
+          <div class="chips" id="chips-nose" data-mode="multi" data-options="Agave,Citrus,Floral,Vanilla,Caramel,Smoke,Pepper,Earthy,Tropical Fruit,Herbs,Butter,Chocolate"></div>
+          <textarea class="notes-input" id="text-nose" rows="2" placeholder="Aroma notes..."></textarea>
+        </div>
+        <div class="category-card">
+          <div class="category-title">Palate</div>
+          <div class="chips" id="chips-palate" data-mode="multi" data-options="Smooth,Fiery,Sweet,Dry,Creamy,Complex,Agave-forward,Oaky,Spicy,Salty"></div>
+          <textarea class="notes-input" id="text-palate" rows="2" placeholder="Taste notes..."></textarea>
+        </div>
+        <div class="category-card">
+          <div class="category-title">Finish</div>
+          <div class="chips" id="chips-finish" data-mode="single" data-options="Short (&lt;15s),Medium (15–30s),Long (30s+)"></div>
+          <textarea class="notes-input" id="text-finish" rows="2" placeholder="Finish notes..."></textarea>
+        </div>
+        <div class="category-card">
+          <div class="category-title">Overall Score</div>
+          <div class="score-row" id="scoreRow"></div>
+          <textarea class="notes-input" id="text-overall" rows="2" placeholder="Final thoughts..."></textarea>
+        </div>
+        <button class="submit-btn" id="submitBtn" disabled>Submit Tasting Notes</button>
+      </div>
+      <div id="pickPrompt" style="text-align:center;color:var(--muted);font-size:0.85rem;padding:32px 0">
+        Select your name and a tequila to begin
+      </div>
+    </div>
+
+    <div id="view-results" class="view">
+      <div class="results-header">
+        <div>
+          <div class="section-label">All Submissions</div>
+          <div class="results-subtitle" id="resultsSubtitle">Loading...</div>
+        </div>
+        <button class="nav-tab" id="refreshBtn" style="border:1px solid var(--border)">Refresh</button>
+      </div>
+      <div class="score-table-wrap">
+        <table class="score-table" id="scoreTable">
+          <thead><tr id="scoreTableHead"></tr></thead>
+          <tbody id="scoreTableBody"></tbody>
+          <tfoot><tr id="scoreTableFoot"></tr></tfoot>
+        </table>
+      </div>
+      <div class="result-tabs">
+        <button class="result-tab active" data-rtab="tequila">By Tequila</button>
+        <button class="result-tab" data-rtab="person">By Person</button>
+      </div>
+      <div id="resultsDetail"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PEOPLE = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Drew'];
+const TEQUILAS = [
+  { id: 1, label: 'A', name: 'Tequila A' },
+  { id: 2, label: 'B', name: 'Tequila B' },
+  { id: 3, label: 'C', name: 'Tequila C' },
+  { id: 4, label: 'D', name: 'Tequila D' },
+];
+
+const DB_URL = 'https://cocktail-49fc4-default-rtdb.firebaseio.com';
+let SUBMISSIONS = [];
+let selectedPerson = null;
+let selectedTequila = null;
+let resultTab = 'tequila';
+
+async function loadSubmissions() {
+  const res = await fetch(`${DB_URL}/submissions.json`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (!data) return [];
+  return Object.values(data);
+}
+
+async function saveSubmission(sub) {
+  const key = `${sub.person}_${sub.tequilaId}`.replace(/\s+/g, '_');
+  const res = await fetch(`${DB_URL}/submissions/${key}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sub)
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return loadSubmissions();
+}
+
+async function init() {
+  document.getElementById('loading').classList.remove('hidden');
+  try {
+    SUBMISSIONS = await loadSubmissions();
+    buildForm();
+    buildResults();
+    document.getElementById('loading').classList.add('hidden');
+  } catch {
+    document.getElementById('loading').textContent = 'Could not load data — tap to retry';
+    document.getElementById('loading').onclick = init;
+  }
+}
+
+function buildForm() {
+  const pg = document.getElementById('personGrid');
+  pg.innerHTML = PEOPLE.map(p => `<button class="person-btn" data-person="${p}">${p}</button>`).join('');
+  pg.querySelectorAll('.person-btn').forEach(b => b.addEventListener('click', () => selectPerson(b.dataset.person)));
+
+  const tg = document.getElementById('tequilaGrid');
+  tg.innerHTML = TEQUILAS.map(t => `<button class="tequila-btn" data-id="${t.id}"><span class="label">${t.label}</span><span class="name">${t.name}</span></button>`).join('');
+  tg.querySelectorAll('.tequila-btn').forEach(b => b.addEventListener('click', () => selectTequila(+b.dataset.id)));
+
+  document.querySelectorAll('.chips[data-options]').forEach(c => {
+    c.innerHTML = c.dataset.options.split(',').map(o => `<button class="chip" data-value="${o}">${o}</button>`).join('');
+    c.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (c.dataset.mode === 'single') c.querySelectorAll('.chip').forEach(x => x.classList.remove('selected'));
+        chip.classList.toggle('selected');
+        checkReady();
+      });
+    });
+  });
+
+  const sr = document.getElementById('scoreRow');
+  sr.innerHTML = Array.from({length:10},(_,i)=>i+1).map(n => `<button class="score-btn ${n>=8?'high':''}" data-score="${n}">${n}</button>`).join('');
+  sr.querySelectorAll('.score-btn').forEach(b => b.addEventListener('click', () => {
+    sr.querySelectorAll('.score-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    checkReady();
+  }));
+
+  document.getElementById('progressDots').innerHTML = TEQUILAS.map(t => `<div class="prog-dot" data-tid="${t.id}"></div>`).join('');
+}
+
+function selectPerson(name) {
+  selectedPerson = name;
+  document.querySelectorAll('.person-btn').forEach(b => b.classList.toggle('selected', b.dataset.person === name));
+  updateDots();
+  checkShow();
+}
+
+function selectTequila(id) {
+  selectedTequila = id;
+  document.querySelectorAll('.tequila-btn').forEach(b => b.classList.toggle('selected', +b.dataset.id === id));
+  checkShow();
+  loadExisting();
+}
+
+function checkShow() {
+  const show = selectedPerson && selectedTequila;
+  document.getElementById('categorySection').style.display = show ? 'block' : 'none';
+  document.getElementById('pickPrompt').style.display = show ? 'none' : 'block';
+  checkReady();
+}
+
+function checkReady() {
+  if (!selectedPerson || !selectedTequila) return;
+  document.getElementById('submitBtn').disabled = !document.querySelector('#scoreRow .score-btn.selected');
+}
+
+function updateDots() {
+  if (!selectedPerson) return;
+  const done = new Set(SUBMISSIONS.filter(s => s.person === selectedPerson).map(s => s.tequilaId));
+  document.querySelectorAll('.prog-dot').forEach(d => d.classList.toggle('done', done.has(+d.dataset.tid)));
+}
+
+function loadExisting() {
+  const ex = SUBMISSIONS.find(s => s.person === selectedPerson && s.tequilaId === selectedTequila);
+  resetForm();
+  if (!ex) return;
+  ['appearance','legs','nose','palate','finish'].forEach(cat => {
+    const sel = ex.notes[cat]?.selected;
+    const cont = document.getElementById(`chips-${cat}`);
+    if (!sel || !cont) return;
+    const vals = Array.isArray(sel) ? sel : [sel];
+    cont.querySelectorAll('.chip').forEach(c => c.classList.toggle('selected', vals.includes(c.dataset.value)));
+    const ta = document.getElementById(`text-${cat}`);
+    if (ta) ta.value = ex.notes[cat]?.text || '';
+  });
+  const score = ex.notes.overall?.score;
+  if (score) document.querySelectorAll('#scoreRow .score-btn').forEach(b => b.classList.toggle('selected', +b.dataset.score === score));
+  const ot = document.getElementById('text-overall');
+  if (ot) ot.value = ex.notes.overall?.text || '';
+  checkReady();
+}
+
+function resetForm() {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.notes-input').forEach(t => t.value = '');
+  checkReady();
+}
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  const getChips = id => {
+    const c = document.getElementById(`chips-${id}`);
+    const sel = [...c.querySelectorAll('.chip.selected')].map(x => x.dataset.value);
+    return c.dataset.mode === 'single' ? (sel[0] || null) : sel;
+  };
+  const getText = id => document.getElementById(`text-${id}`).value.trim();
+  const scoreEl = document.querySelector('#scoreRow .score-btn.selected');
+  const notes = {
+    appearance: { selected: getChips('appearance'), text: getText('appearance') },
+    legs:       { selected: getChips('legs'),       text: getText('legs') },
+    nose:       { selected: getChips('nose'),        text: getText('nose') },
+    palate:     { selected: getChips('palate'),      text: getText('palate') },
+    finish:     { selected: getChips('finish'),      text: getText('finish') },
+    overall:    { score: +scoreEl.dataset.score,     text: getText('overall') },
+  };
+  try {
+    SUBMISSIONS = await saveSubmission({ person: selectedPerson, tequilaId: selectedTequila, notes, timestamp: new Date().toISOString() });
+    updateDots();
+    buildResults();
+    showToast('Notes saved!');
+    const done = new Set(SUBMISSIONS.filter(s => s.person === selectedPerson).map(s => s.tequilaId));
+    const next = TEQUILAS.find(t => !done.has(t.id));
+    if (next) selectTequila(next.id);
+  } catch {
+    showToast('Save failed — check connection', true);
+  }
+  btn.textContent = 'Submit Tasting Notes';
+  checkReady();
+});
+
+function buildResults() {
+  document.getElementById('resultsSubtitle').textContent = `${SUBMISSIONS.length} of ${PEOPLE.length * TEQUILAS.length} possible notes submitted`;
+  const head = document.getElementById('scoreTableHead');
+  const body = document.getElementById('scoreTableBody');
+  const foot = document.getElementById('scoreTableFoot');
+  head.innerHTML = `<th>Person</th>${TEQUILAS.map(t=>`<th>${t.label}</th>`).join('')}<th>Avg</th>`;
+  body.innerHTML = PEOPLE.map(person => {
+    const scores = TEQUILAS.map(t => SUBMISSIONS.find(s=>s.person===person&&s.tequilaId===t.id)?.notes?.overall?.score ?? null);
+    const valid = scores.filter(s=>s!==null);
+    const avg = valid.length ? (valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1) : null;
+    return `<tr><td>${person}</td>${scores.map(s=>`<td>${s!==null?`<span class="score-pill">${s}</span>`:`<span class="score-pill empty">–</span>`}</td>`).join('')}<td>${avg?`<span class="avg-badge">${avg}</span>`:`–`}</td></tr>`;
+  }).join('');
+  const colAvgs = TEQUILAS.map(t => {
+    const scores = SUBMISSIONS.filter(s=>s.tequilaId===t.id&&s.notes?.overall?.score).map(s=>s.notes.overall.score);
+    return scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : null;
+  });
+  foot.innerHTML = `<td>Group avg</td>${colAvgs.map(a=>`<td>${a??'–'}</td>`).join('')}<td></td>`;
+  buildDetail();
+}
+
+function buildDetail() {
+  const c = document.getElementById('resultsDetail');
+  if (!SUBMISSIONS.length) { c.innerHTML = `<div class="no-results"><div class="big">🥃</div><p>No submissions yet.</p></div>`; return; }
+  if (resultTab === 'tequila') {
+    c.innerHTML = TEQUILAS.map(t => {
+      const subs = SUBMISSIONS.filter(s=>s.tequilaId===t.id);
+      if (!subs.length) return '';
+      return `<div class="tequila-group"><div class="tequila-group-header"><div class="tequila-group-letter">${t.label}</div><div class="tequila-group-name">${t.name}</div><div class="tequila-group-count">${subs.length}/${PEOPLE.length}</div></div>${subs.map(s=>renderCard(s)).join('')}</div>`;
+    }).join('');
+  } else {
+    c.innerHTML = PEOPLE.map(person => {
+      const subs = SUBMISSIONS.filter(s=>s.person===person);
+      if (!subs.length) return '';
+      return `<div class="tequila-group"><div class="tequila-group-header"><div class="tequila-group-name" style="font-size:1.2rem">${person}</div><div class="tequila-group-count">${subs.length}/${TEQUILAS.length}</div></div>${subs.map(s=>renderCard(s,true)).join('')}</div>`;
+    }).join('');
+  }
+}
+
+function renderCard(sub, showTequila=false) {
+  const t = TEQUILAS.find(x=>x.id===sub.tequilaId);
+  const n = sub.notes||{};
+  function chipRow(cat) {
+    const s = n[cat]?.selected;
+    if (!s||(Array.isArray(s)&&!s.length)) return '';
+    return `<div class="chip-list">${(Array.isArray(s)?s:[s]).map(x=>`<span class="mini-chip">${x}</span>`).join('')}</div>`;
+  }
+  function noteRow(cat, label) {
+    const chips = chipRow(cat); const txt = n[cat]?.text;
+    if (!chips&&!txt) return '';
+    return `<div class="note-row"><div class="note-label">${label}</div><div class="note-value">${chips}${txt?`<span>${txt}</span>`:''}</div></div>`;
+  }
+  return `<div class="submission-card"><div class="submission-header"><div class="submission-person">${sub.person}${showTequila?` <span style="color:var(--gold)">· ${t?.label}</span>`:''}</div>${n.overall?.score?`<div class="submission-score">${n.overall.score}<span class="denom">/10</span></div>`:''}</div><hr class="divider">${noteRow('appearance','Appearance')}${noteRow('legs','Legs')}${noteRow('nose','Nose')}${noteRow('palate','Palate')}${noteRow('finish','Finish')}${n.overall?.text?`<div class="note-row"><div class="note-label">Notes</div><div class="note-value">${n.overall.text}</div></div>`:''}</div>`;
+}
+
+document.querySelectorAll('.nav-tab[data-view]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab[data-view]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(`view-${b.dataset.view}`).classList.add('active');
+    if (b.dataset.view==='results') buildResults();
+  });
+});
+
+document.querySelectorAll('.result-tab[data-rtab]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.result-tab[data-rtab]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    resultTab = b.dataset.rtab;
+    buildDetail();
+  });
+});
+
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+  try { SUBMISSIONS = await loadSubmissions(); buildResults(); updateDots(); showToast('Updated'); }
+  catch { showToast('Refresh failed', true); }
+});
+
+let toastTimer;
+function showToast(msg, error=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (error?' error':'');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+(async () => { await init(); })();
+</script>
+</body>
+</html>
