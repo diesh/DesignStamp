@@ -37,19 +37,19 @@
     .section-label { font-size: 1rem; font-weight: 900; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
     .section-label::after { content: ""; height: 2px; background: var(--border); flex: 1; }
 
-    .person-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .person-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 40px; } /* Increased space after names */
     .person-btn { border: 3px solid var(--border); background: var(--card); color: var(--cream); font-size: 1.2rem; font-weight: 800; padding: 20px 8px; border-radius: 16px; cursor: pointer; text-align: center; }
     .person-btn.selected { border-color: var(--gold); background: var(--gold); color: #000; }
 
     .tequila-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .tequila-btn { border: 3px solid var(--border); background: var(--card); border-radius: 16px; padding: 20px 4px; cursor: pointer; }
     .tequila-btn .lbl { font-size: 2.2rem; font-weight: 900; color: var(--cream); display: block; }
-    .tequila-btn .nm  { font-size: 0.8rem; font-weight: 800; color: var(--muted); display: block; text-transform: uppercase; }
     .tequila-btn.selected { border-color: var(--gold); background: var(--gold); }
-    .tequila-btn.selected .lbl, .tequila-btn.selected .nm { color: #000; }
+    .tequila-btn.selected .lbl { color: #000; }
 
     .category-card { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
-    .category-title { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+    .category-title { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+    .category-subtitle { font-size: 0.85rem; color: var(--muted); font-weight: 700; margin-bottom: 14px; text-transform: lowercase; }
 
     .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
     .chip { border: 2px solid var(--border); background: var(--smoke); color: var(--cream); font-size: 1.1rem; font-weight: 700; padding: 14px 20px; border-radius: 14px; cursor: pointer; }
@@ -58,8 +58,6 @@
     .score-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
     .score-btn { border: 3px solid var(--border); background: var(--smoke); color: var(--cream); font-size: 1.4rem; font-weight: 900; height: 64px; border-radius: 16px; cursor: pointer; }
     .score-btn.selected { border-color: var(--gold); background: var(--gold); color: #000; }
-    .score-btn.high { border-color: var(--success); color: var(--success); }
-    .score-btn.high.selected { background: var(--success); color: #000; }
 
     .notes-input { width: 100%; background: #000; border: 2px solid var(--border); border-radius: 12px; color: var(--cream); font-size: 1.1rem; padding: 16px; font-family: inherit; }
     .submit-btn { width: 100%; background: var(--success); color: #000; border: none; border-radius: 20px; font-size: 1.4rem; font-weight: 900; padding: 24px; cursor: pointer; margin-top: 20px; box-shadow: 0 8px 0 #3a6630; }
@@ -116,15 +114,25 @@
         <div class="person-grid" id="personGrid"></div>
       </div>
       <div class="form-block">
-        <div class="section-label">2. Which letter?</div>
+        <div class="section-label">2. Which tasting?</div>
         <div class="tequila-grid" id="tequilaGrid"></div>
       </div>
       
       <div id="categorySection" style="display:none">
         <div class="category-card"><div class="category-title">Visuals</div><div class="chips" id="chips-appearance" data-mode="single" data-options="Crystal Clear,Pale Gold,Gold,Deep Gold,Amber"></div><textarea class="notes-input" id="text-appearance" rows="2"></textarea></div>
         <div class="category-card"><div class="category-title">Legs</div><div class="chips" id="chips-legs" data-mode="single" data-options="Thin &amp; Fast,Medium,Thick &amp; Slow"></div><textarea class="notes-input" id="text-legs" rows="2"></textarea></div>
-        <div class="category-card"><div class="category-title">Nose</div><div class="chips" id="chips-nose" data-mode="multi" data-options="Agave,Citrus,Floral,Vanilla,Caramel,Smoke,Pepper,Earthy,Tropical,Herbs,Butter,Chocolate"></div><textarea class="notes-input" id="text-nose" rows="2"></textarea></div>
-        <div class="category-card"><div class="category-title">Palate</div><div class="chips" id="chips-palate" data-mode="multi" data-options="Smooth,Fiery,Sweet,Dry,Creamy,Complex,Agave-forward,Oaky,Spicy,Salty"></div><textarea class="notes-input" id="text-palate" rows="2"></textarea></div>
+        <div class="category-card">
+          <div class="category-title">Nose</div>
+          <div class="category-subtitle">(can select multiple)</div>
+          <div class="chips" id="chips-nose" data-mode="multi" data-options="Agave,Citrus,Floral,Vanilla,Caramel,Smoke,Pepper,Earthy,Tropical,Herbs,Butter,Chocolate"></div>
+          <textarea class="notes-input" id="text-nose" rows="2"></textarea>
+        </div>
+        <div class="category-card">
+          <div class="category-title">Palate</div>
+          <div class="category-subtitle">(can select multiple)</div>
+          <div class="chips" id="chips-palate" data-mode="multi" data-options="Smooth,Fiery,Sweet,Dry,Creamy,Complex,Agave-forward,Oaky,Spicy,Salty"></div>
+          <textarea class="notes-input" id="text-palate" rows="2"></textarea>
+        </div>
         <div class="category-card"><div class="category-title">Finish</div><div class="chips" id="chips-finish" data-mode="single" data-options="Short (gone!),Smooth (No burn),Warm (like a hug),Lingering (30 seconds+)"></div><textarea class="notes-input" id="text-finish" rows="2"></textarea></div>
         <div class="category-card"><div class="category-title">SCORE</div><div class="score-row" id="scoreRow"></div><textarea class="notes-input" id="text-overall" rows="3"></textarea></div>
         <button class="submit-btn" id="submitBtn" disabled>SAVE TASTING NOTES</button>
@@ -212,7 +220,7 @@ function buildForm() {
   });
 
   const sr = document.getElementById('scoreRow');
-  sr.innerHTML = Array.from({length:10},(_,i)=>i+1).map(n => `<button class="score-btn ${n>=8?'high':''}" data-score="${n}">${n}</button>`).join('');
+  sr.innerHTML = Array.from({length:10},(_,i)=>i+1).map(n => `<button class="score-btn" data-score="${n}">${n}</button>`).join('');
   sr.querySelectorAll('.score-btn').forEach(b => b.addEventListener('click', () => {
     sr.querySelectorAll('.score-btn').forEach(x => x.classList.remove('selected'));
     b.classList.add('selected');
