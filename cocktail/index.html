@@ -120,11 +120,12 @@
     .setup-box p { color: var(--muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; }
     .setup-box ol { color: var(--muted); font-size: 0.82rem; line-height: 1.7; padding-left: 18px; margin-bottom: 20px; }
     .setup-box ol a { color: var(--gold); }
+    .setup-box code { background: var(--smoke); padding: 1px 5px; border-radius: 4px; font-size: 0.8rem; }
     .setup-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; display: block; }
     .setup-input { width: 100%; background: var(--smoke); border: 1px solid var(--border); border-radius: 8px; color: var(--cream); font-size: 0.85rem; padding: 10px 12px; font-family: monospace; margin-bottom: 14px; }
     .setup-input:focus { outline: none; border-color: var(--gold-dim); }
     .setup-btn { width: 100%; background: var(--gold); color: #0c0905; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 800; padding: 14px; cursor: pointer; }
-    .setup-error { color: #c04040; font-size: 0.8rem; margin-top: -10px; margin-bottom: 12px; }
+    .setup-error { color: #c04040; font-size: 0.8rem; margin-bottom: 12px; }
 
     #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; color: var(--gold); font-size: 1.1rem; font-weight: 700; transition: opacity 0.3s; }
     #loading.hidden { opacity: 0; pointer-events: none; }
@@ -138,19 +139,17 @@
 <div id="setup-overlay" class="hidden">
   <div class="setup-box">
     <h2>Connect Storage</h2>
-    <p>One-time setup to connect a free cloud storage bin so everyone's notes sync live.</p>
+    <p>One-time setup using a free Firebase database so all phones sync live. Takes 2 minutes.</p>
     <ol>
-      <li>Go to <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> and sign up free</li>
-      <li>Click <strong>API Keys</strong> in the sidebar → create a key → copy it</li>
-      <li>Click <strong>Bins</strong> → <strong>Create Bin</strong> → paste <code>{"submissions":[]}</code> → save</li>
-      <li>Copy the Bin ID from the URL</li>
+      <li>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
+      <li>Create a project (skip analytics)</li>
+      <li>Click <strong>Realtime Database</strong> &rarr; <strong>Create database</strong> &rarr; choose <strong>Start in test mode</strong> &rarr; Enable</li>
+      <li>Copy the URL shown &mdash; looks like <code>https://your-project-default-rtdb.firebaseio.com</code></li>
     </ol>
-    <label class="setup-label">Master API Key</label>
-    <input class="setup-input" id="setupKey" type="password" placeholder="$2a$10$...">
-    <label class="setup-label">Bin ID</label>
-    <input class="setup-input" id="setupBin" type="text" placeholder="64abc123e3a844...">
-    <div class="setup-error hidden" id="setupError"></div>
-    <button class="setup-btn" id="setupSave">Connect & Start</button>
+    <label class="setup-label">Firebase Database URL</label>
+    <input class="setup-input" id="setupUrl" type="text" placeholder="https://your-project-default-rtdb.firebaseio.com">
+    <div class="setup-error" id="setupError" style="display:none"></div>
+    <button class="setup-btn" id="setupSave">Connect &amp; Start</button>
   </div>
 </div>
 
@@ -246,7 +245,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Configure names here ──────────────────────────────────────────────────────
+// ── Configure names here ────────────────────────────────────────────────────────────────────────────────
 const PEOPLE = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Drew'];
 const TEQUILAS = [
   { id: 1, label: 'A', name: 'Tequila A' },
@@ -254,45 +253,40 @@ const TEQUILAS = [
   { id: 3, label: 'C', name: 'Tequila C' },
   { id: 4, label: 'D', name: 'Tequila D' },
 ];
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 
-const CREDS_KEY = 'cocktail_creds';
+const DB_KEY = 'cocktail_db_url';
 let SUBMISSIONS = [];
 let selectedPerson = null;
 let selectedTequila = null;
 let resultTab = 'tequila';
 
-// ── JSONBin API ───────────────────────────────────────────────────────────────
-function getCreds() { return JSON.parse(localStorage.getItem(CREDS_KEY) || 'null'); }
-function setCreds(key, bin) { localStorage.setItem(CREDS_KEY, JSON.stringify({ key, bin })); }
-
-async function binFetch(method, body) {
-  const { key, bin } = getCreds();
-  const res = await fetch(`https://api.jsonbin.io/v3/b/${bin}${method === 'GET' ? '/latest' : ''}`, {
-    method,
-    headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
-    ...(body ? { body: JSON.stringify(body) } : {})
-  });
-  if (!res.ok) throw new Error(`JSONBin ${res.status}`);
-  return res.json();
-}
+// ── Firebase Realtime Database (REST) ──────────────────────────────────────────────────
+function getDbUrl() { return localStorage.getItem(DB_KEY) || ''; }
+function setDbUrl(url) { localStorage.setItem(DB_KEY, url.replace(/\/$/,'')); }
 
 async function loadSubmissions() {
-  const data = await binFetch('GET');
-  return data.record?.submissions || [];
+  const res = await fetch(`${getDbUrl()}/submissions.json`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (!data) return [];
+  return Object.values(data);
 }
 
 async function saveSubmission(sub) {
-  const all = await loadSubmissions();
-  const idx = all.findIndex(s => s.person === sub.person && s.tequilaId === sub.tequilaId);
-  if (idx >= 0) all[idx] = sub; else all.push(sub);
-  await binFetch('PUT', { submissions: all });
-  return all;
+  const key = `${sub.person}_${sub.tequilaId}`.replace(/\s+/g, '_');
+  const res = await fetch(`${getDbUrl()}/submissions/${key}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sub)
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return loadSubmissions();
 }
 
-// ── Setup ─────────────────────────────────────────────────────────────────────
+// ── Setup ────────────────────────────────────────────────────────────────────────────────
 async function checkSetup() {
-  if (!getCreds()) {
+  if (!getDbUrl()) {
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('setup-overlay').classList.remove('hidden');
     return false;
@@ -301,26 +295,29 @@ async function checkSetup() {
 }
 
 document.getElementById('setupSave').addEventListener('click', async () => {
-  const key = document.getElementById('setupKey').value.trim();
-  const bin = document.getElementById('setupBin').value.trim();
+  const url = document.getElementById('setupUrl').value.trim();
   const errEl = document.getElementById('setupError');
-  errEl.classList.add('hidden');
+  errEl.style.display = 'none';
 
-  if (!key || !bin) { errEl.textContent = 'Both fields required'; errEl.classList.remove('hidden'); return; }
+  if (!url.startsWith('https://')) {
+    errEl.textContent = 'Paste the full URL starting with https://';
+    errEl.style.display = 'block';
+    return;
+  }
 
-  setCreds(key, bin);
+  setDbUrl(url);
   try {
     await loadSubmissions();
     document.getElementById('setup-overlay').classList.add('hidden');
     await init();
-  } catch {
-    errEl.textContent = 'Could not connect — check your key and bin ID';
-    errEl.classList.remove('hidden');
-    localStorage.removeItem(CREDS_KEY);
+  } catch (e) {
+    errEl.textContent = `Could not connect (${e.message}) — double-check the URL and make sure test mode is enabled`;
+    errEl.style.display = 'block';
+    localStorage.removeItem(DB_KEY);
   }
 });
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── Init ────────────────────────────────────────────────────────────────────────────────
 async function init() {
   document.getElementById('loading').classList.remove('hidden');
   try {
@@ -334,14 +331,12 @@ async function init() {
   }
 }
 
-// ── Form ──────────────────────────────────────────────────────────────────────
+// ── Form ────────────────────────────────────────────────────────────────────────────────
 function buildForm() {
-  // Person grid
   const pg = document.getElementById('personGrid');
   pg.innerHTML = PEOPLE.map(p => `<button class="person-btn" data-person="${p}">${p}</button>`).join('');
   pg.querySelectorAll('.person-btn').forEach(b => b.addEventListener('click', () => selectPerson(b.dataset.person)));
 
-  // Tequila grid
   const tg = document.getElementById('tequilaGrid');
   tg.innerHTML = TEQUILAS.map(t => `
     <button class="tequila-btn" data-id="${t.id}">
@@ -350,7 +345,6 @@ function buildForm() {
     </button>`).join('');
   tg.querySelectorAll('.tequila-btn').forEach(b => b.addEventListener('click', () => selectTequila(+b.dataset.id)));
 
-  // Chips
   document.querySelectorAll('.chips[data-options]').forEach(c => {
     c.innerHTML = c.dataset.options.split(',').map(o => `<button class="chip" data-value="${o}">${o}</button>`).join('');
     c.querySelectorAll('.chip').forEach(chip => {
@@ -362,7 +356,6 @@ function buildForm() {
     });
   });
 
-  // Score row
   const sr = document.getElementById('scoreRow');
   sr.innerHTML = Array.from({length:10},(_,i)=>i+1).map(n =>
     `<button class="score-btn ${n>=8?'high':''}" data-score="${n}">${n}</button>`).join('');
@@ -372,7 +365,6 @@ function buildForm() {
     checkReady();
   }));
 
-  // Progress dots
   document.getElementById('progressDots').innerHTML =
     TEQUILAS.map(t => `<div class="prog-dot" data-tid="${t.id}"></div>`).join('');
 }
@@ -436,7 +428,7 @@ function resetForm() {
   checkReady();
 }
 
-// ── Submit ────────────────────────────────────────────────────────────────────
+// ── Submit ──────────────────────────────────────────────────────────────────────────────
 document.getElementById('submitBtn').addEventListener('click', async () => {
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
@@ -475,13 +467,12 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   checkReady();
 });
 
-// ── Results ───────────────────────────────────────────────────────────────────
+// ── Results ──────────────────────────────────────────────────────────────────────────────
 function buildResults() {
   const total = PEOPLE.length * TEQUILAS.length;
   document.getElementById('resultsSubtitle').textContent =
     `${SUBMISSIONS.length} of ${total} possible notes submitted`;
 
-  // Score table
   const head = document.getElementById('scoreTableHead');
   const body = document.getElementById('scoreTableBody');
   const foot = document.getElementById('scoreTableFoot');
@@ -492,7 +483,7 @@ function buildResults() {
     const scores = TEQUILAS.map(t => SUBMISSIONS.find(s=>s.person===person&&s.tequilaId===t.id)?.notes?.overall?.score ?? null);
     const valid = scores.filter(s=>s!==null);
     const avg = valid.length ? (valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1) : null;
-    return `<tr><td>${person}</td>${scores.map(s=>`<td>${s!==null?`<span class="score-pill">${s}</span>`:`<span class="score-pill empty">–</span>`}</td>`).join('')}<td>${avg?`<span class="avg-badge">${avg}</span>`:'–'}</td></tr>`;
+    return `<tr><td>${person}</td>${scores.map(s=>`<td>${s!==null?`<span class="score-pill">${s}</span>`:`<span class="score-pill empty">–</span>`}</td>`).join('')}<td>${avg?`<span class="avg-badge">${avg}</span>`:`–`}</td></tr>`;
   }).join('');
 
   const colAvgs = TEQUILAS.map(t => {
@@ -549,7 +540,7 @@ function renderCard(sub, showTequila=false) {
   </div>`;
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────────
+// ── Nav ────────────────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.nav-tab[data-view]').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('.nav-tab[data-view]').forEach(x=>x.classList.remove('active'));
@@ -578,7 +569,7 @@ document.getElementById('refreshBtn').addEventListener('click', async () => {
   } catch { showToast('Refresh failed', true); }
 });
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
+// ── Toast ──────────────────────────────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg, error=false) {
   const t = document.getElementById('toast');
@@ -589,7 +580,7 @@ function showToast(msg, error=false) {
   toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
 }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// ── Boot ────────────────────────────────────────────────────────────────────────────────
 (async () => {
   const ready = await checkSetup();
   if (ready) await init();
