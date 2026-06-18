@@ -3,348 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Tasting Night</title>
+  <title>Tastinggg — Blind Tasting for Groups</title>
   <style>
     :root {
-      --bg:       #0a0806;
-      --surface:  #1a140a;
-      --card:     #241b0d;
-      --border:   #4a3a1e;
-      --gold:     #ffbf33; 
-      --gold-dim: #b38624;
-      --cream:    #ffffff; 
-      --muted:    #b0997a;
-      --smoke:    #2d2110;
-      --success:  #7dd66a;
+      --bg: #0a0806; --surface: #151008; --card: #1e1509;
+      --border: #332208; --gold: #e8a520;
+      --cream: #f5ead0; --muted: #8a7050; --smoke: #2a1c08;
     }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--cream); -webkit-font-smoothing: antialiased; font-size: 18px; }
-    #app { display: flex; flex-direction: column; min-height: 100dvh; }
-
-    header { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 3px solid var(--gold); padding: 8px 16px; }
-    .header-inner { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; padding: 8px 0; }
-    .app-title { font-size: 1.4rem; font-weight: 900; color: var(--gold); text-transform: uppercase; text-align: center; }
-    .app-title span { display: block; color: var(--muted); font-weight: 600; font-size: 0.8rem; letter-spacing: 2px; }
-    .nav-tabs { display: flex; gap: 8px; background: var(--smoke); border-radius: 16px; padding: 6px; }
-    .nav-tab { flex: 1; border: none; background: none; color: var(--muted); font-size: 1.1rem; font-weight: 800; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-    .nav-tab.active { background: var(--gold); color: #000; }
-
-    main { flex: 1; overflow-y: auto; padding: 24px 16px 80px; }
-    .view { display: none; max-width: 720px; margin: 0 auto; }
-    .view.active { display: block; }
-
-    .section-label { font-size: 1rem; font-weight: 900; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-    .section-label::after { content: ""; height: 2px; background: var(--border); flex: 1; }
-
-    .person-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 40px; } /* Increased space after names */
-    .person-btn { border: 3px solid var(--border); background: var(--card); color: var(--cream); font-size: 1.2rem; font-weight: 800; padding: 20px 8px; border-radius: 16px; cursor: pointer; text-align: center; }
-    .person-btn.selected { border-color: var(--gold); background: var(--gold); color: #000; }
-
-    .tequila-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .tequila-btn { border: 3px solid var(--border); background: var(--card); border-radius: 16px; padding: 20px 4px; cursor: pointer; }
-    .tequila-btn .lbl { font-size: 2.2rem; font-weight: 900; color: var(--cream); display: block; }
-    .tequila-btn.selected { border-color: var(--gold); background: var(--gold); }
-    .tequila-btn.selected .lbl { color: #000; }
-
-    .category-card { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
-    .category-title { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
-    .category-subtitle { font-size: 0.85rem; color: var(--muted); font-weight: 700; margin-bottom: 14px; text-transform: lowercase; }
-
-    .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
-    .chip { border: 2px solid var(--border); background: var(--smoke); color: var(--cream); font-size: 1.1rem; font-weight: 700; padding: 14px 20px; border-radius: 14px; cursor: pointer; }
-    .chip.selected { border-color: var(--gold); background: var(--gold); color: #000; }
-
-    .score-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
-    .score-btn { border: 3px solid var(--border); background: var(--smoke); color: var(--cream); font-size: 1.4rem; font-weight: 900; height: 64px; border-radius: 16px; cursor: pointer; }
-    .score-btn.selected { border-color: var(--gold); background: var(--gold); color: #000; }
-
-    .notes-input { width: 100%; background: #000; border: 2px solid var(--border); border-radius: 12px; color: var(--cream); font-size: 1.1rem; padding: 16px; font-family: inherit; }
-    .submit-btn { width: 100%; background: var(--success); color: #000; border: none; border-radius: 20px; font-size: 1.4rem; font-weight: 900; padding: 24px; cursor: pointer; margin-top: 20px; box-shadow: 0 8px 0 #3a6630; }
-    .submit-btn:disabled { background: var(--smoke); color: var(--muted); box-shadow: none; }
-
-    .progress-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; padding: 20px; background: var(--card); border-radius: 20px; border: 2px dashed var(--border); }
-    .prog-label { font-size: 1rem; font-weight: 800; color: var(--gold); }
-    .progress-dots { display: flex; gap: 12px; }
-    .prog-dot { width: 18px; height: 18px; border-radius: 50%; background: #000; border: 2px solid var(--border); }
-    .prog-dot.done { background: var(--success); border-color: var(--success); }
-
-    .submission-card { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-    .submission-person { font-size: 1.3rem; font-weight: 900; }
-    .submission-score { font-size: 2rem; color: var(--gold); font-weight: 900; }
-    .note-label { color: var(--gold); font-weight: 900; font-size: 0.8rem; margin-top: 10px; }
-    .note-value { font-size: 1.1rem; color: #eee; margin-top: 4px; line-height: 1.4; }
-    .mini-chip { display: inline-block; background: var(--gold); color: #000; padding: 4px 12px; border-radius: 8px; margin: 2px; font-weight: 800; font-size: 0.9rem; }
-
-    .result-tabs { display: flex; gap: 8px; background: var(--smoke); border-radius: 16px; padding: 6px; }
-    .result-tab { flex: 1; border: none; background: none; color: var(--muted); font-size: 1.1rem; font-weight: 800; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-    .result-tab.active { background: var(--card); color: var(--gold); border: 2px solid var(--gold); }
-
-    .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(150px); background: var(--success); color: #000; font-weight: 900; padding: 20px 40px; border-radius: 40px; z-index: 1000; transition: transform 0.3s; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--cream); -webkit-font-smoothing: antialiased; }
+    main { max-width: 480px; margin: 0 auto; padding: 60px 24px 80px; text-align: center; }
+    .logo { font-size: 2.8rem; font-weight: 900; color: var(--gold); letter-spacing: -0.03em; margin-bottom: 8px; }
+    .tagline { color: var(--muted); font-size: 1rem; margin-bottom: 48px; line-height: 1.5; }
+    .cta-btn { display: block; width: 100%; background: var(--gold); color: #0a0806; border: none; border-radius: 14px; font-size: 1.1rem; font-weight: 900; padding: 18px; cursor: pointer; text-decoration: none; text-align: center; margin-bottom: 12px; transition: all 0.15s; }
+    .cta-btn:hover { background: #f5b830; }
+    .cta-secondary { display: block; width: 100%; background: var(--card); color: var(--muted); border: 1.5px solid var(--border); border-radius: 14px; font-size: 0.9rem; font-weight: 700; padding: 14px; cursor: pointer; text-decoration: none; text-align: center; margin-bottom: 32px; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+    .join-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .code-input { width: 100%; background: var(--card); border: 2px solid var(--border); border-radius: 14px; color: var(--cream); font-size: 2rem; font-weight: 800; padding: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.2em; font-family: inherit; margin-bottom: 12px; }
+    .code-input:focus { outline: none; border-color: var(--gold); }
+    .join-btn { width: 100%; background: var(--smoke); color: var(--cream); border: 1.5px solid var(--border); border-radius: 14px; font-size: 1rem; font-weight: 800; padding: 16px; cursor: pointer; transition: all 0.15s; }
+    .join-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .spirits-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 40px; }
+    .spirit-pill { background: var(--card); border: 1px solid var(--border); color: var(--muted); font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 20px; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--gold); color: #0a0806; font-weight: 800; font-size: 1rem; padding: 14px 28px; border-radius: 28px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; white-space: nowrap; pointer-events: none; }
     .toast.show { transform: translateX(-50%) translateY(0); }
-    #loading { position: fixed; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; z-index: 2000; color: var(--gold); font-size: 2rem; font-weight: 900; }
-    #loading.hidden { display: none; }
-    .divider { height: 2px; background: var(--border); border: none; margin: 15px 0; }
-    .refresh-btn { background: var(--gold); color: #000; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 900; }
+    .toast.error { background: #c04040; color: #fff; }
   </style>
 </head>
 <body>
-
-<div id="loading">TAP TO START</div>
-
-<div id="app">
-  <header>
-    <div class="header-inner">
-      <div class="app-title">Tasting Night<span>TEQUILA &amp; MEZCAL</span></div>
-      <nav class="nav-tabs">
-        <button class="nav-tab active" data-view="form">ADD NOTES</button>
-        <button class="nav-tab" data-view="results">RESULTS</button>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <div id="view-form" class="view active">
-      <div class="progress-row">
-        <span class="prog-label">SAMPLES DONE:</span>
-        <div class="progress-dots" id="progressDots"></div>
-      </div>
-      <div class="form-block">
-        <div class="section-label">1. Who are you?</div>
-        <div class="person-grid" id="personGrid"></div>
-      </div>
-      <div class="form-block">
-        <div class="section-label">2. Which tasting?</div>
-        <div class="tequila-grid" id="tequilaGrid"></div>
-      </div>
-      
-      <div id="categorySection" style="display:none">
-        <div class="category-card"><div class="category-title">Visuals</div><div class="chips" id="chips-appearance" data-mode="single" data-options="Crystal Clear,Pale Gold,Gold,Deep Gold,Amber"></div><textarea class="notes-input" id="text-appearance" rows="2"></textarea></div>
-        <div class="category-card"><div class="category-title">Legs</div><div class="chips" id="chips-legs" data-mode="single" data-options="Thin &amp; Fast,Medium,Thick &amp; Slow"></div><textarea class="notes-input" id="text-legs" rows="2"></textarea></div>
-        <div class="category-card">
-          <div class="category-title">Nose</div>
-          <div class="category-subtitle">(can select multiple)</div>
-          <div class="chips" id="chips-nose" data-mode="multi" data-options="Agave,Citrus,Floral,Vanilla,Caramel,Smoke,Pepper,Earthy,Tropical,Herbs,Butter,Chocolate"></div>
-          <textarea class="notes-input" id="text-nose" rows="2"></textarea>
-        </div>
-        <div class="category-card">
-          <div class="category-title">Palate</div>
-          <div class="category-subtitle">(can select multiple)</div>
-          <div class="chips" id="chips-palate" data-mode="multi" data-options="Smooth,Fiery,Sweet,Dry,Creamy,Complex,Agave-forward,Oaky,Spicy,Salty"></div>
-          <textarea class="notes-input" id="text-palate" rows="2"></textarea>
-        </div>
-        <div class="category-card"><div class="category-title">Finish</div><div class="chips" id="chips-finish" data-mode="single" data-options="Short (gone!),Smooth (No burn),Warm (like a hug),Lingering (30 seconds+)"></div><textarea class="notes-input" id="text-finish" rows="2"></textarea></div>
-        <div class="category-card"><div class="category-title">SCORE</div><div class="score-row" id="scoreRow"></div><textarea class="notes-input" id="text-overall" rows="3"></textarea></div>
-        <button class="submit-btn" id="submitBtn" disabled>SAVE TASTING NOTES</button>
-      </div>
-      <div id="pickPrompt" style="font-size: 1.4rem; text-align: center; padding: 40px; color: var(--muted); border: 3px dashed var(--border); border-radius: 20px; margin-top: 20px;">Pick your name and a spirit!</div>
-    </div>
-
-    <div id="view-results" class="view">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div>
-          <div class="section-label">All Reviews</div>
-          <div id="resultsSubtitle" style="font-size: 0.9rem; color: var(--muted);"></div>
-        </div>
-        <button class="refresh-btn" id="refreshBtn">REFRESH</button>
-      </div>
-      
-      <div class="result-tabs" style="margin-bottom: 20px;">
-        <button class="result-tab active" data-rtab="tequila">BY SPIRIT</button>
-        <button class="result-tab" data-rtab="person">BY PERSON</button>
-      </div>
-      <div id="resultsDetail"></div>
-    </div>
-  </main>
-</div>
-
 <div class="toast" id="toast"></div>
-
+<main>
+  <div class="logo">Tastinggg</div>
+  <div class="tagline">Blind tasting nights for groups —<br>scored, revealed, remembered.</div>
+  <a href="host.html" class="cta-btn">Host a Tasting</a>
+  <a href="host.html" class="cta-secondary">Already paid? Recover your session →</a>
+  <div class="divider"></div>
+  <div class="join-label">Join a tasting</div>
+  <input class="code-input" id="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off" spellcheck="false">
+  <button class="join-btn" onclick="joinTasting()">Join →</button>
+  <div class="spirits-list">
+    <span class="spirit-pill">Tequila &amp; Mezcal</span>
+    <span class="spirit-pill">Red Wine</span>
+    <span class="spirit-pill">White Wine</span>
+    <span class="spirit-pill">Port</span>
+    <span class="spirit-pill">Whiskey / Scotch</span>
+    <span class="spirit-pill">Beer</span>
+  </div>
+</main>
 <script>
-const PEOPLE = ['Aneil', 'Arif', 'Gagan', 'Manu', 'Sherdil', 'Sima', 'Wesley', 'Zamil'];
-const TEQUILAS = [{id:1,label:'A',name:'Spirit A'},{id:2,label:'B',name:'Spirit B'},{id:3,label:'C',name:'Spirit C'},{id:4,label:'D',name:'Spirit D'}];
-const DB_URL = 'https://cocktail-49fc4-default-rtdb.firebaseio.com';
-let SUBMISSIONS = [];
-let selectedPerson = null;
-let selectedTequila = null;
-let resultTab = 'tequila';
-
-async function loadSubmissions() {
-  const res = await fetch(`${DB_URL}/submissions.json`);
-  const data = await res.json();
-  return data ? Object.values(data) : [];
+function joinTasting() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  if (code.length !== 6) { showToast('Enter a 6-character code', true); return; }
+  window.location.href = 'app.html?code=' + code;
 }
-
-async function saveSubmission(sub) {
-  const key = `${sub.person}_${sub.tequilaId}`.replace(/\s+/g, '_');
-  await fetch(`${DB_URL}/submissions/${key}.json`, { method: 'PUT', body: JSON.stringify(sub) });
-  return loadSubmissions();
-}
-
-async function init() {
-  try {
-    SUBMISSIONS = await loadSubmissions();
-    buildForm();
-    buildResults();
-    document.getElementById('loading').classList.add('hidden');
-  } catch {
-    document.getElementById('loading').textContent = 'ERROR: TAP TO RETRY';
-    document.getElementById('loading').onclick = init;
-  }
-}
-
-function buildForm() {
-  const pg = document.getElementById('personGrid');
-  pg.innerHTML = PEOPLE.map(p => `<button class="person-btn" data-person="${p}">${p}</button>`).join('');
-  pg.querySelectorAll('.person-btn').forEach(b => b.addEventListener('click', () => {
-    selectedPerson = b.dataset.person;
-    document.querySelectorAll('.person-btn').forEach(x => x.classList.toggle('selected', x.dataset.person === selectedPerson));
-    updateDots(); checkShow();
-  }));
-
-  const tg = document.getElementById('tequilaGrid');
-  tg.innerHTML = TEQUILAS.map(t => `<button class="tequila-btn" data-id="${t.id}"><span class="lbl">${t.label}</span></button>`).join('');
-  tg.querySelectorAll('.tequila-btn').forEach(b => b.addEventListener('click', () => {
-    selectedTequila = +b.dataset.id;
-    document.querySelectorAll('.tequila-btn').forEach(x => x.classList.toggle('selected', +x.dataset.id === selectedTequila));
-    checkShow(); loadExisting();
-  }));
-
-  document.querySelectorAll('.chips[data-options]').forEach(c => {
-    c.innerHTML = c.dataset.options.split(',').map(o => `<button class="chip" data-value="${o}">${o}</button>`).join('');
-    c.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
-      if (c.dataset.mode === 'single') c.querySelectorAll('.chip').forEach(x => x.classList.remove('selected'));
-      chip.classList.toggle('selected');
-      checkReady();
-    }));
-  });
-
-  const sr = document.getElementById('scoreRow');
-  sr.innerHTML = Array.from({length:10},(_,i)=>i+1).map(n => `<button class="score-btn" data-score="${n}">${n}</button>`).join('');
-  sr.querySelectorAll('.score-btn').forEach(b => b.addEventListener('click', () => {
-    sr.querySelectorAll('.score-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected');
-    checkReady();
-  }));
-
-  document.getElementById('progressDots').innerHTML = TEQUILAS.map(t => `<div class="prog-dot" data-tid="${t.id}"></div>`).join('');
-}
-
-function checkShow() {
-  const show = selectedPerson && selectedTequila;
-  document.getElementById('categorySection').style.display = show ? 'block' : 'none';
-  document.getElementById('pickPrompt').style.display = show ? 'none' : 'block';
-}
-
-function checkReady() {
-  document.getElementById('submitBtn').disabled = !document.querySelector('#scoreRow .score-btn.selected');
-}
-
-function updateDots() {
-  const done = new Set(SUBMISSIONS.filter(s => s.person === selectedPerson).map(s => s.tequilaId));
-  document.querySelectorAll('.prog-dot').forEach(d => d.classList.toggle('done', done.has(+d.dataset.tid)));
-}
-
-function loadExisting() {
-  const ex = SUBMISSIONS.find(s => s.person === selectedPerson && s.tequilaId === selectedTequila);
-  document.querySelectorAll('.chip, .score-btn').forEach(x => x.classList.remove('selected'));
-  document.querySelectorAll('.notes-input').forEach(t => t.value = '');
-  if (!ex) return;
-  ['appearance','legs','nose','palate','finish'].forEach(cat => {
-    const sel = ex.notes[cat]?.selected;
-    if (!sel) return;
-    const vals = Array.isArray(sel) ? sel : [sel];
-    document.getElementById(`chips-${cat}`).querySelectorAll('.chip').forEach(c => c.classList.toggle('selected', vals.includes(c.dataset.value)));
-    document.getElementById(`text-${cat}`).value = ex.notes[cat]?.text || '';
-  });
-  const score = ex.notes.overall?.score;
-  if (score) document.querySelectorAll('#scoreRow .score-btn').forEach(b => b.classList.toggle('selected', +b.dataset.score === score));
-  document.getElementById('text-overall').value = ex.notes.overall?.text || '';
-  checkReady();
-}
-
-document.getElementById('submitBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  const getChips = id => {
-    const c = document.getElementById(`chips-${id}`);
-    const sel = [...c.querySelectorAll('.chip.selected')].map(x => x.dataset.value);
-    return c.dataset.mode === 'single' ? (sel[0] || null) : sel;
-  };
-  const scoreEl = document.querySelector('#scoreRow .score-btn.selected');
-  const notes = {
-    appearance: { selected: getChips('appearance'), text: document.getElementById('text-appearance').value },
-    legs: { selected: getChips('legs'), text: document.getElementById('text-legs').value },
-    nose: { selected: getChips('nose'), text: document.getElementById('text-nose').value },
-    palate: { selected: getChips('palate'), text: document.getElementById('text-palate').value },
-    finish: { selected: getChips('finish'), text: document.getElementById('text-finish').value },
-    overall: { score: +scoreEl.dataset.score, text: document.getElementById('text-overall').value },
-  };
-  try {
-    SUBMISSIONS = await saveSubmission({ person: selectedPerson, tequilaId: selectedTequila, notes, timestamp: new Date().toISOString() });
-    updateDots(); buildResults(); showToast('SAVED!');
-  } catch { showToast('FAILED!', true); }
-  btn.disabled = false;
-});
-
-function buildResults() {
-  document.getElementById('resultsSubtitle').textContent = `${SUBMISSIONS.length} notes in`;
-  buildDetail();
-}
-
-function buildDetail() {
-  const c = document.getElementById('resultsDetail');
-  if (!SUBMISSIONS.length) { c.innerHTML = '<div class="pick-prompt">No reviews yet</div>'; return; }
-  if (resultTab === 'tequila') {
-    c.innerHTML = TEQUILAS.map(t => {
-      const subs = SUBMISSIONS.filter(s=>s.tequilaId===t.id);
-      if (!subs.length) return '';
-      return `<div style="background:var(--gold); color:#000; padding:10px; border-radius:12px; margin:20px 0 10px; font-weight:900;">SPIRIT ${t.label}</div>${subs.map(s=>renderCard(s)).join('')}`;
-    }).join('');
-  } else {
-    c.innerHTML = PEOPLE.map(person => {
-      const subs = SUBMISSIONS.filter(s=>s.person===person);
-      if (!subs.length) return '';
-      return `<div style="background:var(--gold); color:#000; padding:10px; border-radius:12px; margin:20px 0 10px; font-weight:900;">${person}</div>${subs.map(s=>renderCard(s, true)).join('')}`;
-    }).join('');
-  }
-}
-
-function renderCard(sub, showTequila=false) {
-  const t = TEQUILAS.find(x=>x.id===sub.tequilaId);
-  const n = sub.notes||{};
-  const noteRow = (cat, label) => {
-    const s = n[cat]?.selected; const txt = n[cat]?.text;
-    if (!s && !txt) return '';
-    const chips = (Array.isArray(s)?s:[s]).filter(Boolean).map(x=>`<span class="mini-chip">${x}</span>`).join('');
-    return `<div class="note-row"><div class="note-label">${label}</div><div class="note-value">${chips}${txt?`<div style="font-style:italic">"${txt}"</div>`:''}</div></div>`;
-  };
-  return `<div class="submission-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div class="submission-person">${sub.person}${showTequila?` <span style="color:var(--gold)">[${t?.label}]</span>`:''}</div><div class="submission-score">${n.overall?.score}</div></div><hr class="divider">${noteRow('appearance','LOOK')}${noteRow('legs','LEGS')}${noteRow('nose','SMELL')}${noteRow('palate','TASTE')}${noteRow('finish','FINISH')}${n.overall?.text?`<div class="note-label">FINAL</div><div class="note-value" style="color:var(--gold)">${n.overall.text}</div>`:''}</div>`;
-}
-
-document.querySelectorAll('.nav-tab[data-view]').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById(`view-${b.dataset.view}`).classList.add('active');
-  if (b.dataset.view==='results') buildResults();
-}));
-
-document.querySelectorAll('.result-tab[data-rtab]').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.result-tab').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  resultTab = b.dataset.rtab; buildDetail();
-}));
-
-document.getElementById('refreshBtn').onclick = async () => { SUBMISSIONS = await loadSubmissions(); buildResults(); showToast('REFRESHED'); };
-
+document.getElementById('codeInput').addEventListener('keydown', e => { if (e.key === 'Enter') joinTasting(); });
+let toastTimer;
 function showToast(msg, error=false) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.style.background = error ? '#f44' : 'var(--success)';
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000);
+  t.textContent = msg;
+  t.className = 'toast' + (error ? ' error' : '');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
-
-init();
 </script>
 </body>
 </html>
