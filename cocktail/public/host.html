@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tastinggg — Host Setup</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a0f00;
+      color: #f5e6c8;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 30px 0 20px;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #d4a853;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      color: #a07840;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: #2a1800;
+      border: 1px solid #3d2200;
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 560px;
+      margin: 0 auto 24px;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: #d4a853;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #a07840;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: #1a0f00;
+      border: 1px solid #3d2200;
+      border-radius: 10px;
+      color: #f5e6c8;
+      padding: 12px 16px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus { border-color: #d4a853; }
+    input[type="text"]::placeholder { color: #5a3a1a; }
+
+    .spirit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .spirit-pill {
+      background: #1a0f00;
+      border: 2px solid #3d2200;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #a07840;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .spirit-pill:hover { border-color: #7a5020; color: #d4a853; }
+
+    .spirit-pill.selected {
+      background: #3d2200;
+      border-color: #d4a853;
+      color: #d4a853;
+      font-weight: 600;
+    }
+
+    .spirit-emoji {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .count-label {
+      font-size: 0.85rem;
+      color: #a07840;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .count-btn {
+      width: 36px;
+      height: 36px;
+      background: #1a0f00;
+      border: 1px solid #3d2200;
+      border-radius: 8px;
+      color: #d4a853;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .count-btn:hover { background: #3d2200; }
+    .count-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .count-display {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #d4a853;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .spirit-names {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .spirit-name-field { position: relative; }
+
+    .spirit-name-field .spirit-label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: #7a5020;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .spirit-name-field input {
+      padding-left: 30px;
+      margin-bottom: 0;
+    }
+
+    .people-section { margin-bottom: 24px; }
+
+    .people-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .people-input-row input { margin-bottom: 0; flex: 1; }
+
+    .add-btn {
+      background: #3d2200;
+      border: 1px solid #d4a853;
+      border-radius: 10px;
+      color: #d4a853;
+      padding: 0 18px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .add-btn:hover { background: #5a3510; }
+
+    .people-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .person-tag {
+      background: #3d2200;
+      border: 1px solid #5a3510;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      color: #f5e6c8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .person-tag .remove { color: #7a5020; cursor: pointer; font-size: 0.8rem; line-height: 1; }
+    .person-tag .remove:hover { color: #d4a853; }
+
+    .create-btn {
+      width: 100%;
+      background: #d4a853;
+      border: none;
+      border-radius: 12px;
+      color: #1a0f00;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .create-btn:hover { background: #e8be6a; }
+    .create-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .room-code-display {
+      text-align: center;
+      padding: 24px;
+      background: #1a0f00;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .room-code-label {
+      font-size: 0.8rem;
+      color: #7a5020;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .room-code {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #d4a853;
+      letter-spacing: 0.25em;
+    }
+
+    .guest-url {
+      font-size: 0.82rem;
+      color: #7a5020;
+      margin-top: 10px;
+      word-break: break-all;
+    }
+
+    .qr-container {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0;
+    }
+
+    #qr-canvas {
+      border-radius: 8px;
+      border: 3px solid #3d2200;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: #3d2200;
+      border: 1px solid #d4a853;
+      border-radius: 12px;
+      color: #d4a853;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .copy-btn:hover { background: #5a3510; }
+
+    .progress-table-wrap { overflow-x: auto; }
+
+    .progress-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .progress-table th {
+      color: #7a5020;
+      padding: 8px 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid #3d2200;
+    }
+
+    .progress-table th:first-child { text-align: left; }
+
+    .progress-table td {
+      padding: 8px 10px;
+      text-align: center;
+      border-bottom: 1px solid #2a1800;
+      color: #f5e6c8;
+    }
+
+    .progress-table td:first-child { text-align: left; }
+
+    .check { color: #4caf50; font-size: 1rem; }
+    .dot { color: #3d2200; }
+
+    .refresh-note {
+      font-size: 0.75rem;
+      color: #5a3a1a;
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    .reveal-section {
+      border-top: 1px solid #3d2200;
+      padding-top: 24px;
+    }
+
+    .reveal-section h3 {
+      color: #d4a853;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .reveal-section p {
+      font-size: 0.85rem;
+      color: #7a5020;
+      margin-bottom: 16px;
+    }
+
+    .reveal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .reveal-field { position: relative; }
+
+    .reveal-field .spirit-label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: #7a5020;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .reveal-field input {
+      padding-left: 30px;
+      margin-bottom: 0;
+    }
+
+    .reveal-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #d4a853, #e8be6a);
+      border: none;
+      border-radius: 12px;
+      color: #1a0f00;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .reveal-btn:hover { opacity: 0.9; }
+    .reveal-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .revealed-banner {
+      background: #1a3a0f;
+      border: 1px solid #4caf50;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      color: #4caf50;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      color: #7a5020;
+      padding: 60px 20px;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 400px) {
+      .spirit-names, .reveal-grid { grid-template-columns: 1fr; }
+      .room-code { font-size: 2.2rem; letter-spacing: 0.15em; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">Tastinggg</div>
+    <div class="subtitle">Host Setup</div>
+  </div>
+
+  <!-- SETUP VIEW -->
+  <div id="setup-view">
+    <div class="card">
+      <h2>Event Details</h2>
+
+      <label>Event Name</label>
+      <input type="text" id="event-name" placeholder="e.g. Friday Night Tequila" maxlength="60">
+
+      <label>Spirit Type</label>
+      <div class="spirit-grid">
+        <div class="spirit-pill" data-type="tequila-mezcal" onclick="selectSpirit(this)">
+          <span class="spirit-emoji">🥃</span>Tequila &amp; Mezcal
+        </div>
+        <div class="spirit-pill" data-type="red-wine" onclick="selectSpirit(this)">
+          <span class="spirit-emoji">🍷</span>Red Wine
+        </div>
+        <div class="spirit-pill" data-type="white-wine" onclick="selectSpirit(this)">
+          <span class="spirit-emoji">🥂</span>White Wine
+        </div>
+        <div class="spirit-pill" data-type="port" onclick="selectSpirit(this)">
+          <span class="spirit-emoji">🍶</span>Port
+        </div>
+        <div class="spirit-pill" data-type="whiskey-scotch" onclick="selectSpirit(this)">
+          <span class="spirit-emoji">🥃</span>Whiskey / Scotch
+        </div>
+        <div class="spirit-pill" data-type="beer" onclick="selectSpirit(this)">
+          <span class="spirit-emoji">🍺</span>Beer
+        </div>
+      </div>
+
+      <label>Number of Spirits to Taste</label>
+      <div class="count-row">
+        <span class="count-label">How many?</span>
+        <button class="count-btn" onclick="changeCount(-1)">&#8722;</button>
+        <span class="count-display" id="count-display">4</span>
+        <button class="count-btn" onclick="changeCount(1)">+</button>
+      </div>
+
+      <label>Spirit Blind Labels (guests see A, B, C…)</label>
+      <div class="spirit-names" id="spirit-names"></div>
+
+      <label>Who’s Tasting?</label>
+      <div class="people-section">
+        <div class="people-input-row">
+          <input type="text" id="person-input" placeholder="Add a name…" maxlength="30"
+            onkeydown="if(event.key==='Enter')addPerson()">
+          <button class="add-btn" onclick="addPerson()">+</button>
+        </div>
+        <div class="people-tags" id="people-tags"></div>
+      </div>
+
+      <div class="error-msg" id="form-error" style="display:none"></div>
+
+      <button class="create-btn" onclick="createSession()">Create Session →</button>
+    </div>
+  </div>
+
+  <!-- CONTROL ROOM -->
+  <div id="control-view" style="display:none">
+    <div class="card">
+      <div class="room-code-display">
+        <div class="room-code-label">Room Code</div>
+        <div class="room-code" id="room-code-text">——</div>
+        <div class="guest-url" id="guest-url-text"></div>
+      </div>
+      <div class="qr-container">
+        <canvas id="qr-canvas"></canvas>
+      </div>
+      <button class="copy-btn" onclick="copyLink()">&#128203; Copy Guest Link</button>
+    </div>
+
+    <div class="card">
+      <h2>Progress</h2>
+      <div class="progress-table-wrap">
+        <table class="progress-table">
+          <thead id="progress-head"></thead>
+          <tbody id="progress-body"></tbody>
+        </table>
+      </div>
+      <div class="refresh-note" id="refresh-note">Auto-refreshes every 15s</div>
+    </div>
+
+    <div class="card">
+      <div class="reveal-section">
+        <h3>Reveal the Spirits</h3>
+        <p>Enter the real names below, then reveal to all guests at once.</p>
+        <div class="reveal-grid" id="reveal-grid"></div>
+        <div class="revealed-banner" id="revealed-banner">🎉 Revealed! Guests can now see the results.</div>
+        <button class="reveal-btn" id="reveal-btn" onclick="revealSpirits()">🎉 Reveal to Everyone</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FIREBASE = 'https://cocktail-49fc4-default-rtdb.firebaseio.com';
+    const LABELS = ['A','B','C','D','E','F','G','H'];
+
+    let spiritType = null;
+    let spiritCount = 4;
+    let people = [];
+    let sessionCode = null;
+    let sessionConfig = null;
+
+    function generateCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    function selectSpirit(el) {
+      document.querySelectorAll('.spirit-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      spiritType = el.dataset.type;
+    }
+
+    function changeCount(delta) {
+      const next = spiritCount + delta;
+      if (next < 2 || next > 8) return;
+      spiritCount = next;
+      document.getElementById('count-display').textContent = spiritCount;
+      renderSpiritNames();
+    }
+
+    function renderSpiritNames() {
+      const c = document.getElementById('spirit-names');
+      c.innerHTML = '';
+      for (let i = 0; i < spiritCount; i++) {
+        const div = document.createElement('div');
+        div.className = 'spirit-name-field';
+        div.innerHTML = `<span class="spirit-label">${LABELS[i]}</span><input type="text" id="sname-${i}" placeholder="e.g. Casa Dragones" maxlength="40">`;
+        c.appendChild(div);
+      }
+    }
+
+    function addPerson() {
+      const input = document.getElementById('person-input');
+      const name = input.value.trim();
+      if (!name || people.includes(name)) { input.value = ''; return; }
+      people.push(name);
+      input.value = '';
+      renderTags();
+    }
+
+    function removePerson(name) {
+      people = people.filter(p => p !== name);
+      renderTags();
+    }
+
+    function renderTags() {
+      const c = document.getElementById('people-tags');
+      c.innerHTML = '';
+      people.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'person-tag';
+        const safeName = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        tag.innerHTML = `${name} <span class="remove" onclick="removePerson('${safeName}')">&#10005;</span>`;
+        c.appendChild(tag);
+      });
+    }
+
+    async function createSession() {
+      const eventName = document.getElementById('event-name').value.trim();
+      const errEl = document.getElementById('form-error');
+      errEl.style.display = 'none';
+
+      if (!eventName) { showError('Please enter an event name.'); return; }
+      if (!spiritType) { showError('Please select a spirit type.'); return; }
+      if (people.length < 1) { showError('Add at least one person.'); return; }
+
+      const spirits = [];
+      for (let i = 0; i < spiritCount; i++) {
+        const el = document.getElementById(`sname-${i}`);
+        spirits.push({ label: LABELS[i], codeName: el ? el.value.trim() : '' });
+      }
+
+      const code = generateCode();
+      const config = { eventName, spiritType, spirits, people, revealed: false, createdAt: Date.now() };
+
+      try {
+        const res = await fetch(`${FIREBASE}/sessions/${code}/config.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        });
+        if (!res.ok) throw new Error();
+        sessionCode = code;
+        sessionConfig = config;
+        history.replaceState(null, '', `?code=${code}`);
+        showControlRoom();
+      } catch (e) {
+        showError('Could not create session. Check your connection and try again.');
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('form-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function showControlRoom() {
+      document.getElementById('setup-view').style.display = 'none';
+      document.getElementById('control-view').style.display = 'block';
+
+      const guestUrl = location.origin + location.pathname.replace('host.html', 'app.html') + '?code=' + sessionCode;
+      document.getElementById('room-code-text').textContent = sessionCode;
+      document.getElementById('guest-url-text').textContent = guestUrl;
+
+      QRCode.toCanvas(document.getElementById('qr-canvas'), guestUrl, {
+        width: 180,
+        color: { dark: '#d4a853', light: '#1a0f00' }
+      });
+
+      renderRevealGrid();
+      loadProgress();
+      setInterval(loadProgress, 15000);
+    }
+
+    function renderRevealGrid() {
+      const c = document.getElementById('reveal-grid');
+      c.innerHTML = '';
+      for (let i = 0; i < spiritCount; i++) {
+        const div = document.createElement('div');
+        div.className = 'reveal-field';
+        const placeholder = (sessionConfig && sessionConfig.spirits[i] && sessionConfig.spirits[i].codeName)
+          ? sessionConfig.spirits[i].codeName : 'Real name…';
+        div.innerHTML = `<span class="spirit-label">${LABELS[i]}</span><input type="text" id="reveal-${i}" placeholder="${placeholder}" maxlength="40">`;
+        c.appendChild(div);
+      }
+    }
+
+    function copyLink() {
+      const guestUrl = location.origin + location.pathname.replace('host.html', 'app.html') + '?code=' + sessionCode;
+      navigator.clipboard.writeText(guestUrl).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.innerHTML = '&#128203; Copy Guest Link'; }, 2000);
+      });
+    }
+
+    async function loadProgress() {
+      if (!sessionCode || !sessionConfig) return;
+      try {
+        const res = await fetch(`${FIREBASE}/sessions/${sessionCode}/submissions.json`);
+        const data = await res.json();
+        renderProgressTable(data || {});
+        document.getElementById('refresh-note').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      } catch (e) { /* silent */ }
+    }
+
+    function renderProgressTable(submissions) {
+      const config = sessionConfig;
+      const head = document.getElementById('progress-head');
+      const body = document.getElementById('progress-body');
+
+      let headHtml = '<tr><th>Person</th>';
+      config.spirits.forEach(s => { headHtml += `<th>${s.label}</th>`; });
+      headHtml += '</tr>';
+      head.innerHTML = headHtml;
+
+      let bodyHtml = '';
+      config.people.forEach(person => {
+        bodyHtml += `<tr><td>${person}</td>`;
+        config.spirits.forEach(spirit => {
+          const key = `${person}_${spirit.label}`;
+          bodyHtml += submissions[key] !== undefined
+            ? '<td><span class="check">✓</span></td>'
+            : '<td><span class="dot">&middot;</span></td>';
+        });
+        bodyHtml += '</tr>';
+      });
+      body.innerHTML = bodyHtml;
+    }
+
+    async function revealSpirits() {
+      const btn = document.getElementById('reveal-btn');
+      btn.disabled = true;
+
+      const updatedSpirits = sessionConfig.spirits.map((s, i) => {
+        const input = document.getElementById(`reveal-${i}`);
+        const realName = input ? input.value.trim() : '';
+        return { ...s, revealName: realName || s.codeName || s.label };
+      });
+
+      const update = { ...sessionConfig, spirits: updatedSpirits, revealed: true, revealedAt: Date.now() };
+
+      try {
+        const res = await fetch(`${FIREBASE}/sessions/${sessionCode}/config.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(update)
+        });
+        if (!res.ok) throw new Error();
+        sessionConfig = update;
+        document.getElementById('revealed-banner').style.display = 'block';
+        btn.style.display = 'none';
+      } catch (e) {
+        btn.disabled = false;
+        alert('Reveal failed. Please try again.');
+      }
+    }
+
+    async function restoreSession(code) {
+      document.getElementById('setup-view').innerHTML = '<div style="text-align:center;padding:60px 20px;color:#7a5020">Restoring session…</div>';
+      try {
+        const res = await fetch(`${FIREBASE}/sessions/${code}/config.json`);
+        const config = await res.json();
+        if (!config || !config.eventName) throw new Error();
+        sessionCode = code;
+        sessionConfig = config;
+        spiritCount = config.spirits.length;
+        showControlRoom();
+        if (config.revealed) {
+          document.getElementById('revealed-banner').style.display = 'block';
+          document.getElementById('reveal-btn').style.display = 'none';
+        }
+      } catch (e) {
+        document.getElementById('setup-view').innerHTML =
+          '<div class="card"><p style="color:#ff6b6b">Session not found. <a href="host.html" style="color:#d4a853">Start a new one →</a></p></div>';
+      }
+    }
+
+    // Init
+    renderSpiritNames();
+    const params = new URLSearchParams(location.search);
+    const existingCode = params.get('code');
+    if (existingCode) restoreSession(existingCode.toUpperCase());
+  </script>
+</body>
+</html>
