@@ -96,14 +96,8 @@
   </div>
 </main>
 <script>
-  // ── STRIPE PAYMENT LINKS ─────────────────────────────────────────────────
-  // 1. In Stripe Dashboard → Payment Links, create two products:
-  //      "Tastinggg — Event Access"  @ $20   success URL: YOUR_SITE/host.html?paid=true
-  //      "Tastinggg — Lifetime"      @ $45   success URL: YOUR_SITE/host.html?paid=lifetime
-  // 2. Paste the Payment Link URLs below and push.
-  const STRIPE_EVENT   = '#'; // REPLACE: $20 Stripe Payment Link
-  const STRIPE_LIFETIME = '#'; // REPLACE: $45 Stripe Payment Link
-  // ─────────────────────────────────────────────────────────────────────────
+  const STRIPE_EVENT    = 'https://buy.stripe.com/7sY14n5kO23ccB07ND3Je00';
+  const STRIPE_LIFETIME = 'https://buy.stripe.com/3cI9AT8x07nw6cC4Br3Je01';
 
   document.getElementById('btn-event').href = STRIPE_EVENT;
   document.getElementById('btn-lifetime').href = STRIPE_LIFETIME;
