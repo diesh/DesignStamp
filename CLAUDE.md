@@ -1,9 +1,10 @@
 # DesignStamp — Claude Notes
 
-## Git / Push workflow
-- Always write files to disk first, then `git add && git commit && git push`
-- Never try to inline large HTML/JS as JSON in MCP tool parameters — it always fails and wastes time
+## Dev environment
+- Using Claude Code CLI locally — write files to disk, then `git add && git commit && git push`
 - Write multiple files in parallel (one Write tool call each, same message) before committing
+- Work directly on `main` for solo dev — no need for feature branches
+- Never inline large HTML/JS as JSON in MCP tool parameters — always write to disk first
 
 ## Dev branch
 - Branch: `claude/tequila-tasting-app-q9qOV`
