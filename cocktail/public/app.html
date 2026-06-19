@@ -220,11 +220,11 @@ const SPIRIT_CONFIGS = {
 
 let SESSION_CODE=null,SESSION_CONFIG=null,SUBMISSIONS=[],selectedPerson=null,selectedSpirit=null,resultTab='spirit',revealInterval=null;
 
-function getCodeFromURL() {
+function getCodeFromURL(){
   return new URLSearchParams(window.location.search).get('code')?.toUpperCase()||null;
 }
 
-async function joinSession() {
+async function joinSession(){
   const code=(document.getElementById('codeInput')?.value||SESSION_CODE||'').toUpperCase().trim();
   if(code.length!==6){showToast('Enter a 6-character code',true);return;}
   SESSION_CODE=code;
@@ -298,12 +298,15 @@ function initApp(){
 function buildForm(){
   const cfg=SESSION_CONFIG;
   const spiritCfg=SPIRIT_CONFIGS[cfg.spiritType]||SPIRIT_CONFIGS['tequila-mezcal'];
+
   const pg=document.getElementById('personGrid');
   pg.innerHTML=cfg.people.map(p=>`<button class="person-btn" data-person="${p}">${p}</button>`).join('');
   pg.querySelectorAll('.person-btn').forEach(b=>b.addEventListener('click',()=>selectPerson(b.dataset.person)));
+
   const sg=document.getElementById('spiritGrid');
-  sg.innerHTML=cfg.spirits.map(s=>`<button class="spirit-btn" data-id="${s.id}"><span class="lbl">${s.label}</span><span class="nm">${cfg.revealed?(s.revealName||s.label):''}</span></button>`).join('');
-  sg.querySelectorAll('.spirit-btn').forEach(b=>b.addEventListener('click',()=>selectSpirit(+b.dataset.id)));
+  sg.innerHTML=cfg.spirits.map(s=>`<button class="spirit-btn" data-id="${s.label}"><span class="lbl">${s.label}</span><span class="nm">${cfg.revealed?(s.revealName||s.label):''}</span></button>`).join('');
+  sg.querySelectorAll('.spirit-btn').forEach(b=>b.addEventListener('click',()=>selectSpirit(b.dataset.id)));
+
   const container=document.getElementById('categoriesContainer');
   container.innerHTML=spiritCfg.categories.map(cat=>`
     <div class="category-card">
@@ -320,20 +323,48 @@ function buildForm(){
       });
     });
   });
+
   const sr=document.getElementById('scoreRow');
   sr.innerHTML=Array.from({length:10},(_,i)=>i+1).map(n=>`<button class="score-btn ${n>=8?'high':''}" data-score="${n}">${n}</button>`).join('');
   sr.querySelectorAll('.score-btn').forEach(b=>b.addEventListener('click',()=>{
     sr.querySelectorAll('.score-btn').forEach(x=>x.classList.remove('selected'));
     b.classList.add('selected');checkReady();
   }));
-  document.getElementById('progressDots').innerHTML=cfg.spirits.map(s=>`<div class="prog-dot" data-sid="${s.id}"></div>`).join('');
+
+  document.getElementById('progressDots').innerHTML=cfg.spirits.map(s=>`<div class="prog-dot" data-sid="${s.label}"></div>`).join('');
 }
 
-function selectPerson(name){selectedPerson=name;document.querySelectorAll('.person-btn').forEach(b=>b.classList.toggle('selected',b.dataset.person===name));updateDots();checkShow();}
-function selectSpirit(id){selectedSpirit=id;document.querySelectorAll('.spirit-btn').forEach(b=>b.classList.toggle('selected',+b.dataset.id===id));checkShow();loadExisting();}
-function checkShow(){const show=selectedPerson&&selectedSpirit;document.getElementById('categorySection').style.display=show?'block':'none';document.getElementById('pickPrompt').style.display=show?'none':'block';checkReady();}
-function checkReady(){if(!selectedPerson||!selectedSpirit)return;document.getElementById('submitBtn').disabled=!document.querySelector('#scoreRow .score-btn.selected');}
-function updateDots(){if(!selectedPerson)return;const done=new Set(SUBMISSIONS.filter(s=>s.person===selectedPerson).map(s=>s.spiritId));document.querySelectorAll('.prog-dot').forEach(d=>d.classList.toggle('done',done.has(+d.dataset.sid)));}
+function selectPerson(name){
+  selectedPerson=name;
+  document.querySelectorAll('.person-btn').forEach(b=>b.classList.toggle('selected',b.dataset.person===name));
+  updateDots();
+  checkShow();
+}
+
+function selectSpirit(id){
+  selectedSpirit=id;
+  document.querySelectorAll('.spirit-btn').forEach(b=>b.classList.toggle('selected',b.dataset.id===id));
+  checkShow();
+  loadExisting();
+}
+
+function checkShow(){
+  const show=selectedPerson&&selectedSpirit;
+  document.getElementById('categorySection').style.display=show?'block':'none';
+  document.getElementById('pickPrompt').style.display=show?'none':'block';
+  checkReady();
+}
+
+function checkReady(){
+  if(!selectedPerson||!selectedSpirit)return;
+  document.getElementById('submitBtn').disabled=!document.querySelector('#scoreRow .score-btn.selected');
+}
+
+function updateDots(){
+  if(!selectedPerson)return;
+  const done=new Set(SUBMISSIONS.filter(s=>s.person===selectedPerson).map(s=>s.spiritId));
+  document.querySelectorAll('.prog-dot').forEach(d=>d.classList.toggle('done',done.has(d.dataset.sid)));
+}
 
 function loadExisting(){
   const ex=SUBMISSIONS.find(s=>s.person===selectedPerson&&s.spiritId===selectedSpirit);
@@ -356,7 +387,12 @@ function loadExisting(){
   checkReady();
 }
 
-function resetForm(){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));document.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected'));document.querySelectorAll('.notes-input').forEach(t=>t.value='');checkReady();}
+function resetForm(){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.notes-input').forEach(t=>t.value='');
+  checkReady();
+}
 
 document.getElementById('submitBtn').addEventListener('click',async()=>{
   const btn=document.getElementById('submitBtn');
@@ -374,8 +410,8 @@ document.getElementById('submitBtn').addEventListener('click',async()=>{
     SUBMISSIONS=await saveSubmission({person:selectedPerson,spiritId:selectedSpirit,notes,timestamp:new Date().toISOString()});
     updateDots();buildResults();showToast('Notes saved!');
     const done=new Set(SUBMISSIONS.filter(s=>s.person===selectedPerson).map(s=>s.spiritId));
-    const next=SESSION_CONFIG.spirits.find(s=>!done.has(s.id));
-    if(next) selectSpirit(next.id);
+    const next=SESSION_CONFIG.spirits.find(s=>!done.has(s.label));
+    if(next) selectSpirit(next.label);
   }catch{showToast('Save failed — check connection',true);}
   btn.textContent='Submit Tasting Notes';checkReady();
 });
@@ -386,13 +422,13 @@ function buildResults(){
   const spiritLabel=s=>cfg.revealed?(s.revealName||s.label):s.label;
   document.getElementById('scoreTableHead').innerHTML=`<th>Person</th>${cfg.spirits.map(s=>`<th>${spiritLabel(s)}</th>`).join('')}<th>Avg</th>`;
   document.getElementById('scoreTableBody').innerHTML=cfg.people.map(person=>{
-    const scores=cfg.spirits.map(s=>SUBMISSIONS.find(sub=>sub.person===person&&sub.spiritId===s.id)?.notes?.overall?.score??null);
+    const scores=cfg.spirits.map(s=>SUBMISSIONS.find(sub=>sub.person===person&&sub.spiritId===s.label)?.notes?.overall?.score??null);
     const valid=scores.filter(s=>s!==null);
     const avg=valid.length?(valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(1):null;
     return `<tr><td>${person}</td>${scores.map(s=>`<td>${s!==null?`<span class="score-pill">${s}</span>`:`<span class="score-pill empty">–</span>`}</td>`).join('')}<td>${avg?`<span class="avg-badge">${avg}</span>`:`–`}</td></tr>`;
   }).join('');
   const colAvgs=cfg.spirits.map(s=>{
-    const scores=SUBMISSIONS.filter(sub=>sub.spiritId===s.id&&sub.notes?.overall?.score).map(sub=>sub.notes.overall.score);
+    const scores=SUBMISSIONS.filter(sub=>sub.spiritId===s.label&&sub.notes?.overall?.score).map(sub=>sub.notes.overall.score);
     return scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):null;
   });
   document.getElementById('scoreTableFoot').innerHTML=`<td>Avg</td>${colAvgs.map(a=>`<td>${a??'–'}</td>`).join('')}<td></td>`;
@@ -407,14 +443,14 @@ function buildDetail(){
   function chipRow(n,catId){const sel=n[catId]?.selected;if(!sel||(Array.isArray(sel)&&!sel.length))return '';return `<div class="chip-list">${(Array.isArray(sel)?sel:[sel]).map(x=>`<span class="mini-chip">${x}</span>`).join('')}</div>`;}
   function noteRow(n,catId,label){const chips=chipRow(n,catId);const txt=n[catId]?.text;if(!chips&&!txt)return '';return `<div class="note-row"><div class="note-label">${label}</div><div class="note-value">${chips}${txt?`<span>${txt}</span>`:''}</div></div>`;}
   function renderCard(sub,showSpirit=false){
-    const s=cfg.spirits.find(x=>x.id===sub.spiritId);
+    const s=cfg.spirits.find(x=>x.label===sub.spiritId);
     const n=sub.notes||{};
     const catRows=spiritCfg.categories.map(cat=>noteRow(n,cat.id,cat.title)).join('');
     const spiritDisplay=showSpirit?` <span style="color:var(--gold);font-weight:600">· ${s?.label}</span>`:'';
     return `<div class="submission-card"><div class="submission-header"><div class="submission-person">${sub.person}${spiritDisplay}</div>${n.overall?.score?`<div class="submission-score">${n.overall.score}<span class="denom">/10</span></div>`:''}</div><hr class="divider">${catRows}${n.overall?.text?`<div class="note-row"><div class="note-label">Notes</div><div class="note-value">${n.overall.text}</div></div>`:''}</div>`;
   }
   if(resultTab==='spirit'){
-    c.innerHTML=cfg.spirits.map(s=>{const subs=SUBMISSIONS.filter(sub=>sub.spiritId===s.id);if(!subs.length)return '';const name=cfg.revealed?(s.revealName||s.label):s.label;return `<div class="spirit-group"><div class="spirit-group-header"><div class="spirit-group-letter">${s.label}</div><div class="spirit-group-name">${name}</div><div class="spirit-group-count">${subs.length}/${cfg.people.length}</div></div>${subs.map(sub=>renderCard(sub)).join('')}</div>`;}).join('');
+    c.innerHTML=cfg.spirits.map(s=>{const subs=SUBMISSIONS.filter(sub=>sub.spiritId===s.label);if(!subs.length)return '';const name=cfg.revealed?(s.revealName||s.label):s.label;return `<div class="spirit-group"><div class="spirit-group-header"><div class="spirit-group-letter">${s.label}</div><div class="spirit-group-name">${name}</div><div class="spirit-group-count">${subs.length}/${cfg.people.length}</div></div>${subs.map(sub=>renderCard(sub)).join('')}</div>`;}).join('');
   }else{
     c.innerHTML=cfg.people.map(person=>{const subs=SUBMISSIONS.filter(sub=>sub.person===person);if(!subs.length)return '';return `<div class="spirit-group"><div class="spirit-group-header"><div class="spirit-group-name" style="font-size:1.3rem">${person}</div><div class="spirit-group-count">${subs.length}/${cfg.spirits.length}</div></div>${subs.map(sub=>renderCard(sub,true)).join('')}</div>`;}).join('');
   }
