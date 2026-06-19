@@ -6,9 +6,9 @@
 - Write multiple files in parallel (one Write tool call each, same message) before committing
 - Work directly on `main` for solo dev — no need for feature branches
 
-## Dev branch
-- Branch: `claude/tequila-tasting-app-q9qOV`
-- Render serves from `cocktail/public/` as root
+## Render
+- Serves from `cocktail/public/` as root
+- Auto-deploys from `main` — always push to `main`
 
 ## Firebase
 - DB: `https://cocktail-49fc4-default-rtdb.firebaseio.com`
