@@ -219,12 +219,18 @@
 const DB_URL = 'https://cocktail-49fc4-default-rtdb.firebaseio.com';
 
 const SPIRIT_THEMES = {
-  'tequila-mezcal': { bg:'#0f0800',surface:'#1a1000',card:'#231600',border:'#3a2400',gold:'#d4a853',goldHover:'#e8be6a',goldDim:'#7a5020',goldTint:'rgba(212,168,83,0.2)',cream:'#f5e6c8',muted:'#a07840',smoke:'#1a0f00',btnText:'#0f0800',emoji:'🥃' },
-  'red-wine':       { bg:'#100008',surface:'#1a000e',card:'#240014',border:'#44001e',gold:'#c8405a',goldHover:'#e05070',goldDim:'#7a2040',goldTint:'rgba(200,64,90,0.2)',cream:'#f5d5dc',muted:'#8a506a',smoke:'#280010',btnText:'#fff',emoji:'🍷' },
+  // Tequila: warm gold/amber
+  'tequila-mezcal': { bg:'#0f0800',surface:'#1a1000',card:'#231600',border:'#3a2400',gold:'#d4a020',goldHover:'#e8b430',goldDim:'#7a5010',goldTint:'rgba(212,160,32,0.2)',cream:'#f5e6c8',muted:'#a07840',smoke:'#1a0f00',btnText:'#0f0800',emoji:'🥃' },
+  // Red wine: deep dark crimson (not pink)
+  'red-wine':       { bg:'#0e0004',surface:'#180008',card:'#22000c',border:'#440016',gold:'#a01830',goldHover:'#c02040',goldDim:'#6a0820',goldTint:'rgba(160,24,48,0.2)',cream:'#f5d0d8',muted:'#8a4060',smoke:'#1c0008',btnText:'#fff',emoji:'🍷' },
+  // White wine: light/inverted
   'white-wine':     { bg:'#f0ece4',surface:'#e8e3da',card:'#faf7f2',border:'#d0cbbf',gold:'#9b8c5c',goldHover:'#b0a070',goldDim:'#7a6c40',goldTint:'rgba(155,140,92,0.2)',cream:'#1a1610',muted:'#706858',smoke:'#e4dfd4',btnText:'#1a1610',emoji:'🥂' },
-  'port':           { bg:'#080008',surface:'#100010',card:'#180018',border:'#350035',gold:'#a02060',goldHover:'#c03070',goldDim:'#6a0840',goldTint:'rgba(160,32,96,0.2)',cream:'#f0d0e0',muted:'#7a3060',smoke:'#1c000e',btnText:'#fff',emoji:'🍶' },
-  'whiskey-scotch': { bg:'#0f0a00',surface:'#1a1200',card:'#241800',border:'#402c00',gold:'#d08020',goldHover:'#e89030',goldDim:'#8a5810',goldTint:'rgba(208,128,32,0.2)',cream:'#f5dfc0',muted:'#8a6428',smoke:'#2a1c08',btnText:'#0f0a00',emoji:'🥃' },
-  'beer':           { bg:'#0a0800',surface:'#141000',card:'#201c00',border:'#3a3400',gold:'#c8a820',goldHover:'#e0c030',goldDim:'#806a10',goldTint:'rgba(200,168,32,0.2)',cream:'#f5e8c8',muted:'#8a7840',smoke:'#1e1a00',btnText:'#0a0800',emoji:'🍺' },
+  // Port: purple (distinct from red wine, visible under color blindness)
+  'port':           { bg:'#08000e',surface:'#100018',card:'#180022',border:'#35003d',gold:'#8030a0',goldHover:'#a040c0',goldDim:'#5a1870',goldTint:'rgba(128,48,160,0.2)',cream:'#f0d0f8',muted:'#7a4090',smoke:'#100018',btnText:'#fff',emoji:'🍶' },
+  // Whiskey: orange (distinct from tequila gold)
+  'whiskey-scotch': { bg:'#100800',surface:'#1e1000',card:'#281800',border:'#4a2c00',gold:'#e06020',goldHover:'#f07030',goldDim:'#904010',goldTint:'rgba(224,96,32,0.2)',cream:'#f5dfc0',muted:'#8a6030',smoke:'#1e1000',btnText:'#100800',emoji:'🥃' },
+  // Beer: yellow-chartreuse (distinct from whiskey orange and tequila gold)
+  'beer':           { bg:'#080c00',surface:'#101800',card:'#182200',border:'#303e00',gold:'#c8c000',goldHover:'#e0d800',goldDim:'#787200',goldTint:'rgba(200,192,0,0.2)',cream:'#f5f0c8',muted:'#7a7840',smoke:'#101800',btnText:'#080c00',emoji:'🍺' },
 };
 
 function applyTheme(spiritType) {
