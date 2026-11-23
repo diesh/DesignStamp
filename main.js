@@ -1359,3 +1359,10 @@ window.addEventListener('scroll', () => {
     updateAnnivTagState();
   });
 }, { passive: true });
+
+// Holiday wreath easter egg: tap toggles the greeting (touch-friendly)
+document.querySelectorAll('.wreath').forEach(w => {
+  w.addEventListener('click', e => { e.stopPropagation(); w.classList.toggle('open'); });
+  w.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); w.classList.toggle('open'); } });
+});
+document.addEventListener('click', () => document.querySelectorAll('.wreath.open').forEach(w => w.classList.remove('open')));
