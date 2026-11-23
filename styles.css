@@ -2711,3 +2711,37 @@ body.overlay-open .masthead {
 @keyframes wreath-sway { 0%,100% { rotate: -2deg } 50% { rotate: 2deg } }
 @keyframes wreath-wiggle { 0%,100% { rotate: 0deg } 30% { rotate: 10deg } 60% { rotate: -8deg } }
 @media (prefers-reduced-motion: reduce) { .wreath svg, .wreath:hover svg, .wreath.open svg { animation: none; } }
+
+
+/* Festive bubble (overrides the plain bubble above) */
+.wreath-msg { display: block; overflow: hidden; text-align: center; padding: 16px 28px 14px; border-radius: 18px;
+  color: #1f3d29; border: 4px solid transparent;
+  background:
+    linear-gradient(#fffaf0, #fff2dc) padding-box,
+    repeating-linear-gradient(135deg, #d8403a 0 10px, #fff 10px 20px) border-box;
+  box-shadow: 0 10px 28px rgba(31,61,41,.28), 0 0 0 1px rgba(0,0,0,.04); }
+.wreath-msg::before { border-right-color: #d8403a; }
+.wreath-msg > * { position: relative; z-index: 1; }
+.wm-kicker { display: block; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .22em;
+  text-transform: uppercase; color: #2f6b3f; margin-bottom: 4px; }
+.wm-title { display: block; font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.05;
+  background: linear-gradient(90deg, #c4302b, #e0574f, #c4302b); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; }
+.wm-sub { display: block; font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 600; margin-top: 4px; color: #2f6b3f; }
+.wm-sub b { font-weight: 800; background: linear-gradient(90deg, #e0a526, #f7d26a, #e0a526); -webkit-background-clip: text;
+  background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 1px 0 rgba(120,80,0,.25)); }
+.wm-spark { display: inline-block; }
+.wreath-msg small { display: block; margin-top: 8px; font-size: 12px; font-weight: 500; opacity: .7; }
+.wm-snow { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.wm-snow i { position: absolute; top: -8px; width: 5px; height: 5px; border-radius: 50%; background: #cfe6f5; opacity: 0; }
+.wm-snow i:nth-child(1){left:8%} .wm-snow i:nth-child(2){left:22%;width:4px;height:4px} .wm-snow i:nth-child(3){left:36%}
+.wm-snow i:nth-child(4){left:50%;width:4px;height:4px} .wm-snow i:nth-child(5){left:63%} .wm-snow i:nth-child(6){left:76%;width:4px;height:4px}
+.wm-snow i:nth-child(7){left:88%} .wm-snow i:nth-child(8){left:94%;width:3px;height:3px}
+.wreath:hover .wm-snow i, .wreath:focus-visible .wm-snow i, .wreath.open .wm-snow i { animation: wm-fall 2.6s linear infinite; }
+.wm-snow i:nth-child(2n){ animation-delay: .7s !important; } .wm-snow i:nth-child(3n){ animation-delay: 1.4s !important; }
+.wreath:hover .wm-spark, .wreath.open .wm-spark { animation: wm-twinkle 1.2s ease-in-out infinite; }
+.wreath:hover .wm-title, .wreath.open .wm-title { animation: wm-shimmer 2.4s linear infinite; background-size: 200% auto; }
+@keyframes wm-fall { 0% { transform: translateY(0); opacity: 0 } 15% { opacity: .9 } 100% { transform: translateY(110px); opacity: 0 } }
+@keyframes wm-twinkle { 0%,100% { transform: scale(1) rotate(0) } 50% { transform: scale(1.35) rotate(15deg) } }
+@keyframes wm-shimmer { to { background-position: 200% center } }
+@media (prefers-reduced-motion: reduce) { .wm-snow i, .wm-spark, .wm-title { animation: none !important; } }
