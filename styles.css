@@ -2694,22 +2694,19 @@ body.overlay-open .masthead {
     .contact-legal a { color: #999; text-decoration: underline; }
     .contact-legal a:hover { color: #fb5449; }
 
-
-/* Holiday wreath easter egg */
-.wreath { position: relative; display: inline-block; width: 1.1em; height: 1.1em; margin: 0 .2em 0 .15em;
-  vertical-align: -.2em; cursor: pointer; outline: none; transform-origin: 50% 90%; }
+/* Holiday wreath easter egg (global nav 25 YEARS tag) */
+.anniversary-tag .wreath { position: absolute; top: -14px; right: 4px; width: 22px; height: 22px;
+  pointer-events: auto; cursor: pointer; outline: none; transform-origin: 50% 90%; }
 .wreath svg { width: 100%; height: 100%; display: block; transition: transform .25s ease; }
 .wreath:hover svg, .wreath:focus-visible svg, .wreath.open svg { transform: scale(1.25) rotate(-8deg); animation: wreath-wiggle .6s ease; }
-.wreath-msg { position: absolute; left: 50%; bottom: 135%; transform: translate(-50%, 6px) scale(.9);
-  background: #1f3d29; color: #fff; font-size: 14px; font-weight: 600; line-height: 1.3; text-align: center;
-  white-space: nowrap; padding: 8px 14px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.2);
-  opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 20; }
+.wreath-msg { position: absolute; left: 130%; top: 50%; transform: translate(-6px, -50%) scale(.92);
+  transform-origin: left center; background: #1f3d29; color: #fff; font-family: 'Inter', sans-serif; font-size: 14px;
+  font-weight: 600; line-height: 1.3; text-align: left; white-space: nowrap; padding: 8px 14px; border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.25); opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease; z-index: 20; }
 .wreath-msg small { display: block; font-weight: 400; font-size: 12px; opacity: .8; }
-.wreath-msg::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px;
-  border: 6px solid transparent; border-top-color: #1f3d29; }
-.wreath:hover .wreath-msg, .wreath:focus-visible .wreath-msg, .wreath.open .wreath-msg { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.wreath-msg::before { content: ""; position: absolute; right: 100%; top: 50%; margin-top: -6px;
+  border: 6px solid transparent; border-right-color: #1f3d29; }
+.wreath:hover .wreath-msg, .wreath:focus-visible .wreath-msg, .wreath.open .wreath-msg { opacity: 1; transform: translate(0, -50%) scale(1); }
 @keyframes wreath-wiggle { 0%,100% { rotate: 0deg } 30% { rotate: 10deg } 60% { rotate: -8deg } }
-@media (max-width: 600px) { .wreath-msg { left: 0; transform: translate(0, 6px) scale(.9); }
-  .wreath:hover .wreath-msg, .wreath.open .wreath-msg { transform: translate(0, 0) scale(1); }
-  .wreath-msg::after { left: 14px; } }
 @media (prefers-reduced-motion: reduce) { .wreath:hover svg, .wreath.open svg { animation: none; } }
